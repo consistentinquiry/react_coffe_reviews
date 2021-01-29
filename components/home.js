@@ -1,42 +1,64 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Reviews from './reviews'
+import Shops from './shops'
+import Search from './search';
+import MyAccount from './my_account';
+
 
 class Home extends Component{
   render(){
       
+    const Tab = createBottomTabNavigator();
     const navigation = this.props.navigation;
 
     return(
-        <View style={styles.container}> 
-          <Text style={styles.text}>Home </Text>
-          <Button
-            title="Login"
-            onPress={() => navigation.navigate('Login')}
+      <NavigationContainer independent={true}>
+      <Tab.Navigator
+        tabBarOptions={{
+          activeTintColor: 'tomato',
+          inactiveTintColor: 'gray',
+        }}
+      >
+        <Tab.Screen 
+          name="Reviews" 
+          component={Reviews} 
+          options={{
+          tabBarLabel: 'Reviews',
+          tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons 
+                name="rocket" 
+                color={color} 
+                size={size}
+                 />
+            ),
+        }}/>
+          <Tab.Screen 
+            name="Shops" 
+            component={Shops}
           />
-          <Button
-            title="Search"
-            onPress={() => navigation.navigate('Search')}
+          <Tab.Screen 
+            name="Search" 
+            component={Search}
           />
-          <Button
-            title="Create user"
-            onPress={() => navigation.navigate('CreateUser')}
+          <Tab.Screen 
+            name="My account" 
+            component={MyAccount}
           />
-          <Button
-            title="My account"
-            onPress={() => navigation.navigate('MyAccount')}
-          />
-          <Button
-            title="View shop"
-            onPress={() => navigation.navigate('ViewShop')}
-          />
-          <Button
-            title="View review"
-            onPress={() => navigation.navigate('ViewReview')}
-          />
-        </View>
-    );
+      </Tab.Navigator>
+      </NavigationContainer>
+  );
+
+    
   }
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
