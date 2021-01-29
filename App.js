@@ -7,6 +7,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from './components/home';
 import Login from './components/login';
 import Search from './components/login';
+import CreateUser from './components/create_user'
+import MyAccount from './components/my_account'
+import ViewShop from './components/view_shop';
+import ViewReview from './components/view_review'
 
 
 const Stack = createStackNavigator();
@@ -19,6 +23,11 @@ class App extends Component{
                     <Stack.Screen name="Home" component={Home}/>
                     <Stack.Screen name="Login" component={Login}/>
                     <Stack.Screen name="Search" component={Search}/>
+                    <Stack.Screen name="CreateUser" component={CreateUser}/>
+                    <Stack.Screen name="MyAccount" component={MyAccount}/>
+                    <Stack.Screen name="ViewShop" component={ViewShop}/>
+                    <Stack.Screen name="ViewReview" component={ViewReview}/>
+
                 </Stack.Navigator>
             </NavigationContainer>
         )

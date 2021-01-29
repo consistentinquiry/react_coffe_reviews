@@ -17,6 +17,22 @@ class Home extends Component{
             title="Search"
             onPress={() => navigation.navigate('Search')}
           />
+          <Button
+            title="Create user"
+            onPress={() => navigation.navigate('CreateUser')}
+          />
+          <Button
+            title="My account"
+            onPress={() => navigation.navigate('MyAccount')}
+          />
+          <Button
+            title="View shop"
+            onPress={() => navigation.navigate('ViewShop')}
+          />
+          <Button
+            title="View review"
+            onPress={() => navigation.navigate('ViewReview')}
+          />
         </View>
     );
   }
