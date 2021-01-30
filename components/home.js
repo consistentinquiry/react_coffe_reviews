@@ -9,6 +9,7 @@ import Reviews from './reviews'
 import Shops from './shops'
 import Search from './search';
 import MyAccount from './my_account';
+import CreateUser from './create_user'
 
 
 class Home extends Component{
@@ -32,23 +33,53 @@ class Home extends Component{
           tabBarLabel: 'Reviews',
           tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons 
-                name="rocket" 
+                name="coffee" 
                 color={color} 
                 size={size}
                  />
             ),
-        }}/>
+        }} />
           <Tab.Screen 
             name="Shops" 
             component={Shops}
+            options={{
+              tabBarLabel: 'Shops',
+              tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons 
+                    name="store" 
+                    color={color} 
+                    size={size}
+                     />
+                ),
+              }}
           />
           <Tab.Screen 
             name="Search" 
             component={Search}
+            options={{
+              tabBarLabel: 'Search',
+              tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons 
+                    name="magnify" 
+                    color={color} 
+                    size={size}
+                     />
+                ),
+              }}
           />
           <Tab.Screen 
-            name="My account" 
-            component={MyAccount}
+            name="Me" 
+            component={CreateUser}
+            options={{
+              tabBarLabel: 'Me',
+              tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons 
+                    name="account-box" 
+                    color={color} 
+                    size={size}
+                     />
+                ),
+              }}
           />
       </Tab.Navigator>
       </NavigationContainer>

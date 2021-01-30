@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text, View, FlatList } from 'react-native';
 
 class Shops extends Component{
   render(){
     return(
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Shops!</Text>
-      </View>
+        <FlatList>
+            <View>
+                <Text>Shops!</Text>
+            </View>
+        </FlatList>
+        
     );
   }
 }
