@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import { ActivityIndicator, Text, View, FlatList, State, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 
 import ShopCard from './shop_card'
 
@@ -25,11 +25,18 @@ const dummyLocation = [{
    key: 1
 }]
 
-
+function pressHandler(){
+  console.log("[JOHN - INFO] - Card has been tapped! lolz")
+};
 
 
 
 class Shops extends Component{
+  
+  onPress = () => {
+    console.log("[JOHN - INFO] - Card pressed!")
+  }
+  
   render(){
     return(
           <View>
@@ -37,11 +44,11 @@ class Shops extends Component{
             data={dummyLocation}
             style={styles.container}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => pressHandler(item.location_id)}>
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>{item.shop.location_name}</Text>
-                <Text>{item.shop.avg_overall_rating}</Text>
-                <Text>{item.shop.location_town} </Text>
+              <TouchableOpacity onPress={this.onPress}> 
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.shop.location_name}</Text>
+                  <Text>{item.shop.avg_overall_rating}</Text>
+                  <Text>{item.shop.location_town} </Text>
               </View>
               </TouchableOpacity>
               )}

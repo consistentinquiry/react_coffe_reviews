@@ -17,7 +17,7 @@ class SignIn extends Component{
                 <Button title="Submit"/>
             </View>
         <View>
-            <Text style={styles.link} onPress={() => super.props.navigation.navigate('CreateUser',{ screen: 'CreateUser' })}>No account? No problem!</Text>
+            <Text style={styles.link} onPress={() => props.navigation.navigate('CreateUser',{ screen: 'CreateUser' })}>No account? No problem!</Text>
         </View>
     </View>
         
