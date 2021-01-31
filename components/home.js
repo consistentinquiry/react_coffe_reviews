@@ -10,23 +10,23 @@ import Shops from './shops'
 import Search from './search';
 import MyAccount from './my_account';
 import CreateUser from './create_user'
+import SignIn from './sign_in'
 
 
 class Home extends Component{
   render(){
       
     const Tab = createBottomTabNavigator();
-    const navigation = this.props.navigation;
 
     return(
       <NavigationContainer independent={true}>
-      <Tab.Navigator
+      <Tab.Navigator name="homeNav"
         tabBarOptions={{
           activeTintColor: 'tomato',
           inactiveTintColor: 'gray',
         }}
       >
-        <Tab.Screen 
+        {/* <Tab.Screen 
           name="Reviews" 
           component={Reviews} 
           options={{
@@ -38,7 +38,7 @@ class Home extends Component{
                 size={size}
                  />
             ),
-        }} />
+        }} /> */}
           <Tab.Screen 
             name="Shops" 
             component={Shops}
@@ -69,7 +69,7 @@ class Home extends Component{
           />
           <Tab.Screen 
             name="Me" 
-            component={CreateUser}
+            component={SignIn}
             options={{
               tabBarLabel: 'Me',
               tabBarIcon: ({ color, size }) => (

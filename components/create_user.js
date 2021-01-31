@@ -1,38 +1,41 @@
 import React, { Component } from 'react';
-import { Text, Button, TextInput, View, ActivityIndicator, StyleSheet } from 'react-native';
+import { Text, Button, TextInput, View, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 
 class CreateUser extends Component{
   constructor(props){
     super(props);
     this.state={
       isLoading: true,
-      userData: []
+      userData: [],
+      first_name: '',
+      last_name: '',
+      email: '',
+      password: ''
     }
   }
   
-  // getData(){
-  //   console.log(this.constructor.name + " Fetching from server...")
-  //   return fetch('http://10.0.2.2:3333/api/1.0.0/user',{
-  //     params: {
+  postUser(){
+    console.log("Posting...")
+    return fetch('http://10.0.2.2:3333/api/1.0.0/user',{
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}, 
+      body: JSON.stringify({
+        first_name:this.state.first_name,
+        last_name:this.state.last_name,
+        email: this.state.email,
+        password: this.state.password
+      })
+    })
+    .then((response) => response.json())
+    .then((json) => {
+      return json;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
 
-  //     }
-  //   })
-  //     .then((response) => response.json())
-  //     .then((responseJson) => {
-  //     this.setState({
-  //       isLoading: false,
-  //       userData: responseJson
-  //     });
-  //   })
-  //   .catch((error) => {
-  //     console.log(error)
-  //   });
-  // }
-
-  // componentDidMount(){
-  //   this.getData();
-  // }
-
+  
   
 
     render(){
@@ -40,22 +43,34 @@ class CreateUser extends Component{
 
         <View>
         <View>
-          <Text h1>First name:</Text>
-          <TextInput placeholder="Forname pls..."/>
+          <Text style={styles.txtHeaders}>First name:</Text>
+          <TextInput 
+            placeholder="Forname pls..."
+            onChangeText={(first_name) => this.setState({first_name}, console.log(first_name))}
+          />
         </View>
         <View>
-        <Text>Second name:</Text>
-        <TextInput placeholder="Surname pls..."/>
+        <Text >Second name:</Text>
+        <TextInput 
+          placeholder="last_name pls..."
+          onChangeText={(last_name) => this.setState({last_name}, console.log(last_name))}
+        />
       </View>
       <View>
         <Text>Email:</Text>
-        <TextInput placeholder="Email pls..."/>
+        <TextInput 
+          placeholder="Email pls..."
+          onChangeText={(email) => this.setState({email}, console.log(email))}
+        />
       </View>
       <View>
         <Text>Password:</Text>
-        <TextInput placeholder="Password pls..."/>
+        <TextInput 
+          placeholder="Password pls..."
+          onChangeText={(password) => this.setState({password}, console.log(password))}
+        />
       </View>
-      <Button title="Submit" onPress={console.log("[INFO] - I've been pressed!")}/>
+      <Button title="Submit" onPress={() => this.postUser()}/>
       </View>
         
       );
@@ -70,6 +85,10 @@ const styles = StyleSheet.create({
              alignItems: 'center',
              justifyContent: 'center'
      },
+     txtHeaders: {
+       shadowColor: 'purple',
+       borderLeftColor: 'green'      
+     }
     })
 
 export default CreateUser;

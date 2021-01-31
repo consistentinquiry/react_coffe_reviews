@@ -12,8 +12,7 @@ import Search from './components/login';
 import CreateUser from './components/create_user'
 import MyAccount from './components/my_account'
 import ViewShop from './components/view_shop';
-import ViewReview from './components/view_review'
-
+import ViewReview from './components/view_review';
 
 const Stack = createStackNavigator();
 
@@ -23,7 +22,7 @@ class App extends Component{
     render(){
         return (
             <NavigationContainer>
-                <Stack.Navigator screenOptions={{headerShown: false}}>
+                <Stack.Navigator name="rootNav" screenOptions={{headerShown: false}}>
                     <Stack.Screen 
                         name="Home" 
                         component={Home}
