@@ -1,8 +1,11 @@
 import React, { Component, useState } from 'react';
 import { ActivityIndicator, Text, View, FlatList, State, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+
 
 import ShopCard from './shop_card'
+import ViewShop from './view_shop'
 
 
 const dummyLocation = [{
@@ -25,16 +28,19 @@ const dummyLocation = [{
    key: 1
 }]
 
-function pressHandler(){
-  console.log("[JOHN - INFO] - Card has been tapped! lolz")
-};
-
 
 
 class Shops extends Component{
   
   onPress = () => {
+    const Stack = createStackNavigator();
+
     console.log("[JOHN - INFO] - Card pressed!")
+      return(
+        <Stack.Navigator>
+          <Stack.Screen name="ViewShop" component={ViewShop} />
+        </Stack.Navigator>
+        );
   }
   
   render(){

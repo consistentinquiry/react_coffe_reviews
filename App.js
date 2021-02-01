@@ -19,7 +19,8 @@ class App extends Component{
     render(){
         
       const Tab = createBottomTabNavigator();
-  
+      
+
       return(
         <NavigationContainer >
         <Tab.Navigator name="homeNav"
