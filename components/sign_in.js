@@ -1,8 +1,12 @@
 import { NavigationContainer, StackActions, CommonActions } from '@react-navigation/native';
+
 import React, { Component } from 'react';
 import { Button, Text, View, FlatList, TextInput, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import SignUp from './create_user'
+
+import createStackNavigator from '@react-navigation/stack'
 
 
 class SignIn extends Component{
@@ -28,7 +32,7 @@ class SignIn extends Component{
                 })
                 .then((response) => response.json())
                 .then((json) => {
-                    console.log(json)
+                    console.log("[DEBUG] - Storing token: " + json.token )
                     this.storeData(json)
                     this.getData()
                     
@@ -39,20 +43,24 @@ class SignIn extends Component{
             });
             }
 
-        storeData = async (value) => {
-                try {
-                  const jsonValue = JSON.stringify(value)
-                  await AsyncStorage.setItem('@storage_Key', jsonValue)
-                } catch (e) {
-                  console.log("[ERROR] Something's gone wrong with saving your login token: " + e)
-                }
+            storeData = async (value) => {
+              try {
+                await AsyncStorage.setItem('@storage_Key', value.token)
+              } catch (e) {
+                console.log("[ERROR] - Something's gone wrong saving your token: " + e)
               }
+            }
+        
+        
         
         getData = async () => {
                 try {
                   const value = await AsyncStorage.getItem('@storage_Key')
                   if(value !== null) {
-                    console.log("[DEBUG] You're returned value: " + value)
+                    
+                    // this.state.userData = value;
+                    console.log("[DEBUG] - value= " + value)
+                    return value
                   }
                 } catch(e) {
                   console.log("[ERROR] Couldn't retrieve your value, soz")
@@ -60,8 +68,17 @@ class SignIn extends Component{
               }
 
 
+
+        
+
+        
+
+
   render(){
-    return(
+    // console.log("[DEBUG] - this.getData: "+ String(this.getData()))
+    // if (this.getData == "")
+    const Stack = createStackNavigator();
+      return(
         <View>
             <View>
                 <Text>Email:</Text>
@@ -74,15 +91,22 @@ class SignIn extends Component{
                     placeholder="password"
                     onChangeText={(password) => this.setState({password})}
                 />
-                <Button title="Submit" onPress={() =>this.postlogin()}/>
+                <Button title="Submit" onPress={() => {
+                  <Stack.Navigator>
+                    <Stack.Screen name="SignUp" Component={SignUp} />
+                  </Stack.Navigator>
+                }}/>
             </View>
         <View>
-            <Text style={styles.link} onPress={() => this.props.navigation.naviagte('CreateUser')}>No account? No problem!</Text>
+            <Text style={styles.link} onPress={() => this.signUp()}>No account? No problem!</Text>
         </View>
     </View>
-        
     );
-  }
+    }
+    
+
+    
+      
 }
 
 const styles = StyleSheet.create({
