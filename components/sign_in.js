@@ -1,4 +1,4 @@
-import { NavigationContainer, StackActions, CommonActions } from '@react-navigation/native';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 
 import React, { Component } from 'react';
 import { Button, Text, View, FlatList, TextInput, StyleSheet } from 'react-native';
@@ -6,7 +6,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import SignUp from './create_user'
 
-import createStackNavigator from '@react-navigation/stack'
 
 
 class SignIn extends Component{
@@ -15,6 +14,7 @@ class SignIn extends Component{
         this.state={
           isLoading: true,
           userData: [],
+          authenticated: false,
           email: '',
           password: ''
         }
@@ -35,6 +35,7 @@ class SignIn extends Component{
                     console.log("[DEBUG] - Storing token: " + json.token )
                     this.storeData(json)
                     this.getData()
+                    this.state.authenticated = true;
                     
                 return json;
             })
@@ -75,9 +76,8 @@ class SignIn extends Component{
 
 
   render(){
-    // console.log("[DEBUG] - this.getData: "+ String(this.getData()))
-    // if (this.getData == "")
-    const Stack = createStackNavigator();
+    console.log("[DEBUG] - this.getData: "+ String(this.getData()))
+    if (this.state.authenticated === false){
       return(
         <View>
             <View>
@@ -91,17 +91,21 @@ class SignIn extends Component{
                     placeholder="password"
                     onChangeText={(password) => this.setState({password})}
                 />
-                <Button title="Submit" onPress={() => {
-                  <Stack.Navigator>
-                    <Stack.Screen name="SignUp" Component={SignUp} />
-                  </Stack.Navigator>
-                }}/>
+                <Button title="Submit" onPress={() => this.postlogin() }/>
             </View>
         <View>
             <Text style={styles.link} onPress={() => this.signUp()}>No account? No problem!</Text>
         </View>
     </View>
     );
+    }
+    else {
+      return(
+        <View>
+          <Text>You have logged in!</Text>
+        </View>
+      );
+    }
     }
     
 

@@ -18,8 +18,7 @@ import SignIn from './components/sign_in'
 
 
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+
 
 
 const HomeNav = () => {
@@ -88,16 +87,19 @@ const HomeNav = () => {
     </Tab.Navigator>
   )
 }
-
+const Tab = createBottomTabNavigator();
 class App extends Component{
    
   render(){
+    
+    // const Stack = createStackNavigator();
     return(
       <NavigationContainer >
-      <Stack.Navigator>
+      {/* <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeNav}/>
         <Stack.Screen name="SignUp" Component={CreateUser} />
-      </Stack.Navigator>
+      </Stack.Navigator> */}
+      {HomeNav()}
     </NavigationContainer>
     )
     }
