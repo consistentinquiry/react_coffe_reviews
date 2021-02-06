@@ -6,41 +6,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 import ShopCard from './shop_card'
-import ViewShop from './view_shop'
-
-
-const dummyLocation = [{
-  shop:
-   { location_id: 73,
-     location_name: "Aunt Mary's Great Coffee Shop",
-     location_town: "London",
-     avg_overall_rating: 4.5,
-     location_reviews: 
-      {
-        review_id: 643,
-        overall_rating: 4,
-        price_rating: 2,
-        quality_rating: 3,
-        clenliness_rating: 5,
-        review_body: "Great coffee, but the bathrooms stank!",
-        likes: 4654
-      }
-   },
-   key: 1
-}]
-
-
-
 
 class Shops extends Component{
   constructor(props){
     super(props);
     this.state={
       token: '1c033012bb5444c731e1d296bc0eb2db',
-      locationData: []
+      locationData: [],
+      loggedIn: false
     }
   }
-
+  
     
   //  async getToken()
   //   {
@@ -91,36 +67,30 @@ class Shops extends Component{
         })
       })
     }
-  
-  onPress = () => {
-    const Stack = createStackNavigator();
-      return(
-        <Stack.Navigator>
-          <Stack.Screen name="ViewShop" component={ViewShop} />
-        </Stack.Navigator>
-        );
-  }
+
   
   render()
   {
     // this.getToken()
-    return(
-          <View>
-            <FlatList
-            data={this.state.locationData}
-            style={styles.container}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={this.onPress}> 
-                <View style={styles.card}>
-                  <Text style={styles.cardTitle}>{item.location_name}</Text>
-                  <Text>{item.avg_overall_rating}</Text>
-                  <Text>{item.location_town} </Text>
-              </View>
-              </TouchableOpacity>
-              )}
-            />
-        </View>
-    );
+    const navigation = this.props.navigation;
+      return(
+        <View>
+          <FlatList
+          data={this.state.locationData}
+          style={styles.container}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => navigation.navigate('ViewShop')}> 
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>{item.location_name}</Text>
+                <Text>{item.avg_overall_rating}</Text>
+                <Text>{item.location_town} </Text>
+            </View>
+            </TouchableOpacity>
+            )}
+          />
+      </View>
+    );  
+    
   }
 }
 
@@ -129,9 +99,9 @@ const styles = StyleSheet.create({
     padding: '3%'
   },
   card: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#777',
-    padding: 8,
+    padding: 20,
   },
   cardTitle: {
     fontSize: 18

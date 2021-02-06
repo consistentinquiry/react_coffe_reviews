@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Button, Text, View, FlatList, TextInput, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import SignUp from './create_user'
+import CreateUser from './create_user'
 
 
 
@@ -20,7 +20,7 @@ class SignIn extends Component{
         }
       }
 
-        postlogin(){
+      postlogin(){
             // console.log("[INFO] Posting login: " + this.state.email + " Password: " + this.state.password)
             return fetch('http://10.0.2.2:3333/api/1.0.0/user/login',{
                 method: 'POST',
@@ -44,7 +44,7 @@ class SignIn extends Component{
             });
             }
 
-            storeData = async (value) => {
+      storeData = async (value) => {
               try {
                 await AsyncStorage.setItem('@storage_Key', value.token)
               } catch (e) {
@@ -54,7 +54,7 @@ class SignIn extends Component{
         
         
         
-        getData = async () => {
+      getData = async () => {
                 try {
                   const value = await AsyncStorage.getItem('@storage_Key')
                   if(value !== null) {
@@ -68,6 +68,8 @@ class SignIn extends Component{
                 }
               }
 
+      
+
 
 
         
@@ -77,6 +79,7 @@ class SignIn extends Component{
 
   render(){
     console.log("[DEBUG] - this.getData: "+ String(this.getData()))
+    const nav = this.props.navigation
     if (this.state.authenticated === false){
       return(
         <View>
@@ -94,7 +97,7 @@ class SignIn extends Component{
                 <Button title="Submit" onPress={() => this.postlogin() }/>
             </View>
         <View>
-            <Text style={styles.link} onPress={() => this.signUp()}>No account? No problem!</Text>
+            <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>No account? No problem!</Text>
         </View>
     </View>
     );

@@ -70,7 +70,7 @@ class CreateUser extends Component{
           onChangeText={(password) => this.setState({password}, console.log(password))}
         />
       </View>
-      <Button title="Submit" onPress={() => this.postUser(), console.log("[DEBUG] Button pressed!")}/>
+      <Button title="Submit" onPress={() => this.postUser()}/>
       </View>
         
       );
