@@ -28,10 +28,9 @@ class App extends Component{
       <Stack.Navigator
         screenOptions={{ headerShown: false}}  
       >
-        
         <Stack.Screen name="Home" component={Home}/>
-        <Stack.Screen name="ViewShop" component={ViewShop}/>
-        <Stack.Screen name="CreateUser" component={CreateUser} />
+        <Stack.Screen name="ViewShop" component={ViewShop} options={{headerShown: true}}/>
+        <Stack.Screen name="CreateUser" component={CreateUser} options={{headerShown: true}} />
       </Stack.Navigator>
     </NavigationContainer>
     )

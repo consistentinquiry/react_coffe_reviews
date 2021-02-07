@@ -73,17 +73,19 @@ class Shops extends Component{
   {
     // this.getToken()
     const navigation = this.props.navigation;
+    console.log("[DEBUG] navigation: " + navigation)
       return(
         <View>
           <FlatList
           data={this.state.locationData}
           style={styles.container}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('ViewShop')}> 
+            <TouchableOpacity onPress={() =>  navigation.navigate('ViewShop', {id: item.location_id} )}> 
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>{item.location_name}</Text>
                 <Text>{item.avg_overall_rating}</Text>
                 <Text>{item.location_town} </Text>
+                {console.log("[DEBUG] item= " + item.location_name + " in " + item.location_town)}
             </View>
             </TouchableOpacity>
             )}
