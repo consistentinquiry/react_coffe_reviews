@@ -11,48 +11,44 @@ class Shops extends Component{
   constructor(props){
     super(props);
     this.state={
-      token: '1c033012bb5444c731e1d296bc0eb2db',
+      token: '',
       locationData: [],
       loggedIn: false
     }
   }
   
     
-  //  async getToken()
-  //   {
-  //     try{
-  //       let token = await AsyncStorage.getItem(token)
-  //       if(token){
-  //         this.setState(this.token = token)
-  //       }
-  //       else{
-  //         console.log("[INFO] - There aint no token in storage")
-  //       }
-  //     }
-  //     catch(e){
-  //       console.log("[ERROR] - Something's gone wrong grabbing your token from storage: " + e)
-  //     }
-  //   }
-
-    // async getToken(){                                                                                                                                                                                               
-    //     try{                                                                                                                                                                                                               
-    //       let token = await AsyncStorage.getItem(token)                                                                                                                                                             
-    //       if(token){                                                                                                                                                                                                 
-    //         this.setState({token: token})                                                                                                                                                                      
-    //         this.setState({loggedIn: true});                                                                                                                                                                   
-    //       }                                                                                                                                                                                                          
-    //       else{                                                                                                                                                                                                      
-    //         this.setState({loggedIn: false});                                                                                                                                                                                             }                                                                                                                                                                                                          
-    //         this.getChits();                                                                                                                                                                                           
-    //       }                                                                                                                                                                                                                  
-    //     catch(error){                                                                                                                                                                                                      
-    //         console.log(error.message)                                                                                                                                                                                 
-    //       }                                                                                                                                                                                                                  
-    //     }          
-
   componentDidMount(){
+    this.getToken()
+    if(this.state.loggedIn)
+    {
+      this.getShops()
+    }
+    
+    
+  }
+
+  getToken(){
+    try{
+      let stored = AsyncStorage.getItem("@storage_Key")
+      console.log("[DEBUG] Got this token from storage: " + stored)
+      if(stored){
+        this.setState({token: stored})
+        this.setState({authenticated: true})
+      }
+      else{
+        this.setState({authenticated: false})
+        console.log("[INFO] No token found, setting as not logged in")
+      }
+    }
+    catch(e){
+      console.log("[ERROR] Somethings gone wrong retrieving token (shops): " + e)
+    }
+  }        
+
+  getShops(){
     console.log("[INFO] Fetching shops...")
-      fetch('http://10.0.2.2:3333/api/1.0.0/find', {
+      fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -74,6 +70,8 @@ class Shops extends Component{
     // this.getToken()
     const navigation = this.props.navigation;
     console.log("[DEBUG] navigation: " + navigation)
+    if(this.state.loggedIn)
+    {
       return(
         <View>
           <FlatList
@@ -92,7 +90,14 @@ class Shops extends Component{
           />
       </View>
     );  
-    
+    }
+    else{
+      return(
+      <View>
+        <Text>Not logged in, nothing to view! </Text>
+      </View>
+      )
+    }
   }
 }
 

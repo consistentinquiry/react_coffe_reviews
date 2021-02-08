@@ -10,11 +10,48 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 
 import { createBottomTabNavigator  } from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Tab = createBottomTabNavigator();
 
 class Home extends Component {
+  constructor(props){
+    super(props);
+    this.state={
+      authenticated: false,
+      token: ''
+    }
+  }
+  
+  componentDidMount(){
+    this.getToken()
+    
+  }
+
+  // componentDidUpdate(prevProps, prevState)
+  // {
+  //   if (prevState.authenticated == true)
+  // }
+
+  getToken(){
+    try{
+      let stored = AsyncStorage.getItem("@storage_Key")
+      console.log("[DEBUG] Got this token from storage: " + stored)
+      if(stored){
+        this.setState({token: stored})
+        this.setState({authenticated: true})
+      }
+      else{
+        this.setState({authenticated: false})
+        console.log("[INFO] No token found, setting as not logged in")
+      }
+    }
+    catch(e){
+      console.log("[ERROR] Somethings gone wrong retrieving token (home): " + e)
+    }
+  }
+
     render(){
         return(
             <Tab.Navigator name="homeNav"

@@ -15,7 +15,7 @@ class CreateUser extends Component{
   }
   
   postUser(){
-    console.log("Posting...")
+    console.log("Posting new user...")
     return fetch('http://10.0.2.2:3333/api/1.0.0/user',{
       method: 'POST',
       headers: {'Content-Type': 'application/json'}, 
@@ -26,11 +26,19 @@ class CreateUser extends Component{
         password: this.state.password
       })
     })
-    .then((response) => response.json())
-    .then((json) => {
-      return json;
+    // .then((response) => response.json())
+    .then((response) => {
+      if(response.ok)
+      {
+        const nav = this.props.navigation
+        Alert.alert("User '" + this.state.email + "' created!\nNow log in...")
+        nav.popToTop()
+      }
+      
+      
     })
     .catch((error) => {
+      Alert.alert("Something went wrong, double check you've entered a unique email and the password is at least 5 chars long. Here's some more specific info:\n " +error)
       console.error(error);
     });
   }
@@ -39,35 +47,35 @@ class CreateUser extends Component{
   
 
     render(){
+      
       return(
-
         <View>
         <View>
           <Text style={styles.txtHeaders}>First name:</Text>
           <TextInput 
             placeholder="Forname pls..."
-            onChangeText={(first_name) => this.setState({first_name}, console.log(first_name))}
+            onChangeText={(first_name) => this.setState({first_name})}
           />
         </View>
         <View>
         <Text >Second name:</Text>
         <TextInput 
           placeholder="last_name pls..."
-          onChangeText={(last_name) => this.setState({last_name}, console.log(last_name))}
+          onChangeText={(last_name) => this.setState({last_name})}
         />
       </View>
       <View>
         <Text>Email:</Text>
         <TextInput 
           placeholder="Email pls..."
-          onChangeText={(email) => this.setState({email}, console.log(email))}
+          onChangeText={(email) => this.setState({email})}
         />
       </View>
       <View>
         <Text>Password:</Text>
         <TextInput 
           placeholder="Password pls..."
-          onChangeText={(password) => this.setState({password}, console.log(password))}
+          onChangeText={(password) => this.setState({password})}
         />
       </View>
       <Button title="Submit" onPress={() => this.postUser()}/>

@@ -1,19 +1,40 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 class ViewShop extends Component{
   constructor(props){
     super(props);
     this.id  = this.props.route.params.id;
     this.state = {
-      token: '1c033012bb5444c731e1d296bc0eb2db',
+      token: '',
       thisShop: []
 
     }
   }
 
   componentDidMount(){
-    console.log("[INFO] Fetching shops...")
+    this.getToken()
+    this.getShop()
+  }
+
+  getToken(){
+    try{
+      let stored = AsyncStorage.getItem("@storage_Key")
+      console.log("[DEBUG] Got this token from storage: " + stored)
+      if(stored){
+        this.setState({token: stored})
+      }
+      else{
+        console.log("[WARN] No token found, you won't be able to get the shop")
+      }
+    }
+    catch(e){
+      console.log("[ERROR] Somethings gone wrong retrieving token (home): " + e)
+    }
+  }
+
+  getShop(){
+    console.log("[INFO] Fetching a single shop...")
     
       fetch('http://10.0.2.2:3333/api/1.0.0/location/' + this.id, {
       method: 'GET',
@@ -31,7 +52,7 @@ class ViewShop extends Component{
       console.log("[DEBUG] Retrieved: " + this.state.thisShop)
     })
     .catch((error) => {
-      console.log("[ERROR] Something's gone wrong: "+error)
+      console.log("[ERROR] Something's gone wrong (viewShop): "+error)
     });
       
     }
@@ -41,7 +62,7 @@ class ViewShop extends Component{
     // console.log("[DEBUG] this.state.id: " + this.id)
     return(
         <View>
-          <Text>{this.state.thisShop.location_name}</Text>
+          <Text style={styles.title}>{this.state.thisShop.location_name}</Text>
           <Text>{this.state.thisShop.location_town}</Text>
 
           <Text>{this.state.thisShop.avg_overall_rating}</Text>
@@ -52,5 +73,17 @@ class ViewShop extends Component{
     );
   }
 }
+
+const styles = StyleSheet.create({
+    title: {
+      fontSize: 40
+    },
+    location: {
+      fontSize: 25
+    },
+    ratings: {
+      
+    }
+})
 
 export default ViewShop;

@@ -34,7 +34,7 @@ class SignIn extends Component{
                 .then((json) => {
                     console.log("[DEBUG] - Storing token: " + json.token )
                     this.storeData(json)
-                    this.getData()
+
                     this.state.authenticated = true;
                     
                 return json;
@@ -46,71 +46,39 @@ class SignIn extends Component{
 
       storeData = async (value) => {
               try {
-                await AsyncStorage.setItem('@storage_Key', value.token)
+                await AsyncStorage.setItem('storage_Key', value.token)
               } catch (e) {
                 console.log("[ERROR] - Something's gone wrong saving your token: " + e)
               }
             }
         
         
-        
-      getData = async () => {
-                try {
-                  const value = await AsyncStorage.getItem('@storage_Key')
-                  if(value !== null) {
-                    
-                    // this.state.userData = value;
-                    console.log("[DEBUG] - value= " + value)
-                    return value
-                  }
-                } catch(e) {
-                  console.log("[ERROR] Couldn't retrieve your value, soz")
-                }
-              }
 
-      
-
-
-
-        
-
-        
-
-
-  render(){
-    console.log("[DEBUG] - this.getData: "+ String(this.getData()))
-    const nav = this.props.navigation
-    if (this.state.authenticated === false){
+    render(){
+      const nav = this.props.navigation
       return(
-        <View>
-            <View>
-                <Text>Email:</Text>
-                <TextInput 
-                    placeholder="Enter email..."
-                    onChangeText={(email) => this.setState({email})}
-                />
-                <Text>Password: </Text>
-                <TextInput 
-                    placeholder="password"
-                    onChangeText={(password) => this.setState({password})}
-                />
-                <Button title="Submit" onPress={() => this.postlogin() }/>
-            </View>
-        <View>
-            <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>No account? No problem!</Text>
-        </View>
-    </View>
-    );
-    }
-    else {
-      return(
-        <View>
-          <Text>You have logged in!</Text>
-        </View>
+          <View>
+              <View>
+                  <Text>Email:</Text>
+                  <TextInput 
+                      placeholder="Enter email..."
+                      onChangeText={(email) => this.setState({email})}
+                  />
+                  <Text>Password: </Text>
+                  <TextInput 
+                      placeholder="password"
+                      onChangeText={(password) => this.setState({password})}
+                  />
+                  <Button title="Submit" onPress={() => this.postlogin() }/>
+              </View>
+          <View>
+              <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>No account? No problem!</Text>
+          </View>
+      </View>
       );
-    }
-    }
-    
+      
+      }
+      
 
     
       
