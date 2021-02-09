@@ -58,7 +58,7 @@ class SignIn extends Component{
       const nav = this.props.navigation
       return(
           <View>
-              <View>
+              <View >
                   <Text>Email:</Text>
                   <TextInput 
                       placeholder="Enter email..."
@@ -69,10 +69,10 @@ class SignIn extends Component{
                       placeholder="password"
                       onChangeText={(password) => this.setState({password})}
                   />
-                  <Button title="Submit" onPress={() => this.postlogin() }/>
+                  <Button title="Log in" onPress={() => this.postlogin() }/>
               </View>
           <View>
-              <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>No account? No problem!</Text>
+              <Text onPress={() => nav.navigate(CreateUser)}>No account? No problem!</Text>
           </View>
       </View>
       );
@@ -87,7 +87,8 @@ class SignIn extends Component{
 const styles = StyleSheet.create({
     link: {
         color: 'blue'
-    }
+    },
+    
 })
 
 export default SignIn;

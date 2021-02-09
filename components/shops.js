@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { ActivityIndicator, Text, View, FlatList, State, StyleSheet } from 'react-native';
+import { ActivityIndicator, Text, View, FlatList, State, StyleSheet, Image, ImageBackground } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,7 +11,7 @@ class Shops extends Component{
   constructor(props){
     super(props);
     this.state={
-      token: '',
+      token: '67271d2724c85dfe00fd0584175b377a',
       locationData: [],
       loggedIn: false
     }
@@ -20,24 +20,21 @@ class Shops extends Component{
     
   componentDidMount(){
     this.getToken()
-    if(this.state.loggedIn)
-    {
-      this.getShops()
-    }
+    this.getShops()
     
     
   }
 
-  getToken(){
+  async getToken(){
     try{
-      let stored = AsyncStorage.getItem("@storage_Key")
-      console.log("[DEBUG] Got this token from storage: " + stored)
+      let stored = await AsyncStorage.getItem("storage_Key")
+      console.log("[DEBUG] (shops) Got this token from storage: " + JSON.stringify(stored))
       if(stored){
         this.setState({token: stored})
-        this.setState({authenticated: true})
+        this.setState({loggedIn: true})
       }
       else{
-        this.setState({authenticated: false})
+        this.setState({loggedIn: false})
         console.log("[INFO] No token found, setting as not logged in")
       }
     }
@@ -67,13 +64,14 @@ class Shops extends Component{
   
   render()
   {
-    // this.getToken()
+    
     const navigation = this.props.navigation;
-    console.log("[DEBUG] navigation: " + navigation)
-    if(this.state.loggedIn)
+    console.log("[DEBUG] authenticated: " + this.state.loggedIn)
+    if(this.state.token)  //<---- may need changing later
     {
       return(
         <View>
+          <ImageBackground style={styles.backgroundImage} source={require('../img/cup.jpg')}>
           <FlatList
           data={this.state.locationData}
           style={styles.container}
@@ -88,6 +86,7 @@ class Shops extends Component{
             </TouchableOpacity>
             )}
           />
+          </ImageBackground>
       </View>
     );  
     }
@@ -109,9 +108,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#777',
     padding: 20,
+    backgroundColor: '#FFFFFF'
   },
   cardTitle: {
     fontSize: 18
+  },
+  backgroundImage :{
+    width: '100%',
+    height: '100%'
   }
 })
 
