@@ -1,13 +1,5 @@
 import React, {Component} from 'react';
-import {
-  Text,
-  Button,
-  TextInput,
-  View,
-  ActivityIndicator,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import {Text, Button, TextInput, View, StyleSheet, Alert} from 'react-native';
 
 class CreateUser extends Component {
   constructor(props) {
@@ -55,10 +47,8 @@ class CreateUser extends Component {
     );
   }
 
-
   render() {
-
-      return (
+    return (
       <View>
         <View>
           <Text style={styles.txtHeaders}>First name:</Text>
@@ -90,8 +80,7 @@ class CreateUser extends Component {
         </View>
         <Button title="Submit" onPress={() => this.postUser()} />
       </View>
-
-      );
+    );
   }
 }
 

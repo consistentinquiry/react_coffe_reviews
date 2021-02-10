@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {ActivityIndicator, Text, View, FlatList} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 
 class MyAccount extends Component {
   constructor(props) {

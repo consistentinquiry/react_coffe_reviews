@@ -1,14 +1,5 @@
-import {NavigationContainer, CommonActions} from '@react-navigation/native';
-
 import React, {Component} from 'react';
-import {
-  Button,
-  Text,
-  View,
-  FlatList,
-  TextInput,
-  StyleSheet,
-} from 'react-native';
+import {Button, Text, View, TextInput, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CreateUser from './create_user';

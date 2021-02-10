@@ -1,11 +1,5 @@
-import {NavigationContainer, StackActions} from '@react-navigation/native';
-import React, {Component, useState} from 'react';
-import {propTypes} from 'react-bootstrap/esm/Image';
-import {Button, Text, View, FlatList, StyleSheet} from 'react-native';
-import {
-  LongPressGestureHandler,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
+import React, {Component} from 'react';
+import {Text, View, StyleSheet} from 'react-native';
 
 class ShopCard extends Component {
   constructor(props) {
@@ -17,9 +11,11 @@ class ShopCard extends Component {
   render() {
     return (
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>{item.shop.location_name}</Text>
-        <Text>{item.shop.avg_overall_rating}</Text>
-        <Text>{item.shop.location_town} </Text>
+        <Text style={styles.cardTitle}>
+          {this.state.item.shop.location_name}
+        </Text>
+        <Text>{this.state.item.shop.avg_overall_rating}</Text>
+        <Text>{this.state.item.shop.location_town} </Text>
       </View>
     );
   }
