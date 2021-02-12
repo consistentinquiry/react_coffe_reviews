@@ -30,6 +30,7 @@ class SignIn extends Component {
       .then((response) => response.json())
       .then((json) => {
         console.log('[DEBUG] (sign in) - Storing token: ' + json.token);
+        console.log('[DEBUG] (sign in) - Storing ID: ' + json.id);
         this.state.authenticated = true;
         this.storeData(json);
         return json;
@@ -41,9 +42,12 @@ class SignIn extends Component {
 
   storeData = async (value) => {
     try {
-      await AsyncStorage.setItem('storage_Key', value.token);
+      await AsyncStorage.setItem('token', value.token);
+      await AsyncStorage.setItem('id', JSON.stringify(value.id));
     } catch (e) {
-      console.log("[ERROR] - Something's gone wrong saving your token: " + e);
+      console.log(
+        "[ERROR] - Something's gone wrong saving your token or ID: " + e,
+      );
     }
   };
 

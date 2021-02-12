@@ -1,19 +1,7 @@
-import React, {Component, useState} from 'react';
-import {
-  ActivityIndicator,
-  Text,
-  View,
-  FlatList,
-  State,
-  StyleSheet,
-  Image,
-  ImageBackground,
-} from 'react-native';
+import React, {Component} from 'react';
+import {Text, View, FlatList, StyleSheet, ImageBackground} from 'react-native';
 import {TouchableOpacity} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import ShopCard from './shop_card';
 
 class Shops extends Component {
   constructor(props) {
@@ -21,38 +9,38 @@ class Shops extends Component {
     this.state = {
       token: '',
       locationData: [],
-      authenticated: true,
     };
   }
 
   componentDidMount() {
-    this.getToken();
+    this.login();
   }
-  componentDidUpdate() {}
+
+  async login() {
+    await this.getToken();
+    this.getShops();
+  }
 
   async getToken() {
     try {
-      let stored = await AsyncStorage.getItem('storage_Key');
+      const stored = await AsyncStorage.getItem('token');
       console.log(
-        '[DEBUG] (home) Got this token from storage: ' + JSON.stringify(stored),
+        '(shops) Got this token from storage: ' + JSON.stringify(stored),
       );
       if (stored) {
         this.setState({token: stored});
-        this.setState({authenticated: true});
         this.getShops();
       } else {
-        this.setState({authenticated: false});
-        console.log('[INFO] (home) No token found, setting as not logged in');
+        console.error(
+          '(shops) No token found, will not be able to make API calls',
+        );
       }
     } catch (e) {
-      console.log(
-        '[ERROR] Somethings gone wrong retrieving token (home): ' + e,
-      );
+      console.error('Somethings gone wrong retrieving token (home): ' + e);
     }
   }
 
-  async getShops() {
-    await this.state.token;
+  getShops() {
     console.log('[INFO] Fetching shops...');
     fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
       method: 'GET',
@@ -62,23 +50,21 @@ class Shops extends Component {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log('[INFO] Setting state to reponse JSON...');
+        console.info('Setting state to reponse JSON...');
         this.setState({
           locationData: json,
         });
       })
       .catch((error) => {
         console.error(error);
-        console.log("[DEBUG] Here's the token: " + this.state.token);
+        console.debug("Here's the token: " + this.state.token);
       });
   }
 
   render() {
     const navigation = this.props.navigation;
-    console.log('[DEBUG] (shops) authenticated: ' + this.state.authenticated);
     console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
     if (this.state.token) {
-      //<---- may need changing later
       return (
         <View>
           <ImageBackground

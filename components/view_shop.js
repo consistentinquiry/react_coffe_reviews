@@ -17,25 +17,22 @@ class ViewShop extends Component {
     this.getShop();
   }
 
-  getToken() {
+  async getToken() {
     try {
-      let stored = AsyncStorage.getItem('@storage_Key');
-      console.log('[DEBUG] Got this token from storage: ' + stored);
+      let stored = await AsyncStorage.getItem('token');
+      console.info('Got this token from storage: ' + stored);
       if (stored) {
         this.setState({token: stored});
       } else {
-        console.log("[WARN] No token found, you won't be able to get the shop");
+        console.warn("No token found, you won't be able to get the shop");
       }
     } catch (e) {
-      console.log(
-        '[ERROR] Somethings gone wrong retrieving token (home): ' + e,
-      );
+      console.error('Somethings gone wrong retrieving token (home): ' + e);
     }
   }
 
   getShop() {
-    console.log('[INFO] Fetching a single shop...');
-
+    console.info('Fetching a single shop...');
     fetch('http://10.0.2.2:3333/api/1.0.0/location/' + this.id, {
       method: 'GET',
       headers: {
@@ -45,20 +42,19 @@ class ViewShop extends Component {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log('[INFO] Setting state to reponse JSON...');
+        console.info('Setting state to reponse JSON...');
         this.setState({
           thisShop: json,
         });
-        console.log('[DEBUG] Retrieved: ' + this.state.thisShop);
+        console.debug('Retrieved: ' + this.state.thisShop);
       })
       .catch((error) => {
-        console.log("[ERROR] Something's gone wrong (viewShop): " + error);
+        console.error("Something's gone wrong (viewShop): " + error);
       });
   }
 
   render() {
-    console.log('[DEBUG] id: ' + this.id);
-    // console.log("[DEBUG] this.state.id: " + this.id)
+    console.debug('ID: ' + this.id);
     return (
       <View>
         <Text style={styles.title}>{this.state.thisShop.location_name}</Text>

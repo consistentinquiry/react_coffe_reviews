@@ -31,7 +31,7 @@ class Home extends Component {
 
   // async getToken(){
   //   try{
-  //     let stored = await AsyncStorage.getItem("storage_Key")
+  //     let stored = await AsyncStorage.getItem("token")
   //     console.log("[DEBUG] (home) Got this token from storage: " + JSON.stringify(stored))
   //     if(stored){
   //       this.setState({token: stored})
