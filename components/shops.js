@@ -1,7 +1,15 @@
 import React, {Component} from 'react';
-import {Text, View, FlatList, StyleSheet, ImageBackground} from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  StyleSheet,
+  ImageBackground,
+  TouchableHighlight,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Shops extends Component {
   constructor(props) {
@@ -9,6 +17,31 @@ class Shops extends Component {
     this.state = {
       token: '',
       locationData: [],
+      dummyData: [
+        {
+          location_id: 73,
+          location_name: "Aunt Mary's Great Coffee Shop",
+          location_town: 'London',
+          latitude: 74.567,
+          longitude: 102.435,
+          photo_path: 'http://cdn.coffida.com/images/78346822.jpg',
+          avg_overall_rating: 4.5,
+          avg_price_rating: 4.3,
+          avg_quality_rating: 4,
+          avg_clenliness_rating: 3.8,
+          location_reviews: [
+            {
+              review_id: 643,
+              overall_rating: 4,
+              price_rating: 2,
+              quality_rating: 3,
+              clenliness_rating: 5,
+              review_body: 'Great coffee, but the bathrooms stank!',
+              likes: 4654,
+            },
+          ],
+        },
+      ],
     };
   }
 
@@ -64,46 +97,81 @@ class Shops extends Component {
   render() {
     const navigation = this.props.navigation;
     console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
-    if (this.state.token) {
-      return (
-        <View>
-          <ImageBackground
-            style={styles.backgroundImage}
-            source={require('../img/cup.jpg')}>
-            <FlatList
-              data={this.state.locationData}
-              style={styles.container}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('ViewShop', {id: item.location_id})
-                  }>
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>{item.location_name}</Text>
-                    <Text>{item.avg_overall_rating}</Text>
-                    <Text>{item.location_town} </Text>
-                    {console.log(
-                      '[DEBUG] item= ' +
-                        item.location_name +
-                        ' in ' +
-                        item.location_town,
-                    )}
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </ImageBackground>
-        </View>
-      );
-    } else {
-      return (
-        <View>
-          <Text>Not logged in, nothing to view! </Text>
-        </View>
-      );
-    }
+    return (
+      <View>
+        <ImageBackground
+          style={styles.backgroundImage}
+          source={require('../img/coffee.jpg')}>
+          <FlatList
+            data={this.state.locationData}
+            style={styles.container}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('ViewShop', {id: item.location_id})
+                }>
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.location_name}</Text>
+                  <Text>{item.avg_overall_rating}</Text>
+                  <Text>{item.location_town} </Text>
+                  <TouchableHighlight onPress={() => console.log('Pressed!')}>
+                    <View>
+                      <Icon name="thumbs-up" size={30} color="#900" />
+                    </View>
+                  </TouchableHighlight>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </ImageBackground>
+      </View>
+    );
   }
 }
+
+// render() {
+//   const navigation = this.props.navigation;
+//   console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
+//   if (this.state.token) {
+//     return (
+//       <View>
+//         <ImageBackground
+//           style={styles.backgroundImage}
+//           source={require('../img/cup.jpg')}>
+//           <FlatList
+//             data={this.state.dummyData}
+//             style={styles.container}
+//             renderItem={({item}) => (
+//               <TouchableOpacity
+//                 onPress={() =>
+//                   navigation.navigate('ViewShop', {id: item.location_id})
+//                 }>
+//                 <View style={styles.card}>
+//                   <Text style={styles.cardTitle}>{item.location_name}</Text>
+//                   <Text>{item.avg_overall_rating}</Text>
+//                   <Text>{item.location_town} </Text>
+//                   {console.log(
+//                     '[DEBUG] item= ' +
+//                       item.location_name +
+//                       ' in ' +
+//                       item.location_town,
+//                   )}
+//                 </View>
+//               </TouchableOpacity>
+//             )}
+//           />
+//         </ImageBackground>
+//       </View>
+//     );
+//   } else {
+//     return (
+//       <View>
+//         <Text>Not logged in, nothing to view! </Text>
+//       </View>
+//     );
+//   }
+// }
+// }
 
 const styles = StyleSheet.create({
   container: {
@@ -122,6 +190,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  button: {
+
+  }
 });
 
 export default Shops;

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, ImageBackground} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import StarRating from 'react-native-star-rating';
 
 class ViewShop extends Component {
   constructor(props) {
@@ -53,17 +54,59 @@ class ViewShop extends Component {
       });
   }
 
+  onStarRatingPress() {
+    console.debug('Star pressed!');
+  }
+
   render() {
     console.debug('ID: ' + this.id);
     return (
       <View>
-        <Text style={styles.title}>{this.state.thisShop.location_name}</Text>
-        <Text>{this.state.thisShop.location_town}</Text>
+        <ImageBackground
+          style={styles.backgroundImage}
+          source={require('../img/blur_background.jpg')}>
+          <Text style={styles.title}>{this.state.thisShop.location_name}</Text>
+          <Text style={styles.location}>
+            {this.state.thisShop.location_town}
+          </Text>
 
-        <Text>{this.state.thisShop.avg_overall_rating}</Text>
-        <Text>{this.state.thisShop.avg_price_rating}</Text>
-        <Text>{this.state.thisShop.avg_quality_rating}</Text>
-        <Text>{this.state.thisShop.avg_clenliness_rating}</Text>
+          <Text style={styles.ratingTitle}>Average overall_rating: </Text>
+          <StarRating
+            disabled={false}
+            fullStarColor={'gold'}
+            maxStars={5}
+            rating={this.state.thisShop.avg_overall_rating}
+            starSize={20}
+            selectedStar={(rating) => this.onStarRatingPress(rating)}
+          />
+          <Text style={styles.ratingTitle}>Average price rating: </Text>
+          <StarRating
+            disabled={false}
+            fullStarColor={'gold'}
+            maxStars={5}
+            rating={this.state.thisShop.avg_price_rating}
+            starSize={20}
+            selectedStar={(rating) => this.onStarRatingPress(rating)}
+          />
+          <Text style={styles.ratingTitle}>Average quality rating: </Text>
+          <StarRating
+            disabled={false}
+            fullStarColor={'gold'}
+            maxStars={5}
+            rating={this.state.thisShop.avg_quality_rating}
+            starSize={20}
+            selectedStar={(rating) => this.onStarRatingPress(rating)}
+          />
+          <Text style={styles.ratingTitle}>Average clenliness rating: </Text>
+          <StarRating
+            disabled={false}
+            fullStarColor={'gold'}
+            maxStars={5}
+            rating={this.state.thisShop.avg_clenliness_rating}
+            starSize={20}
+            selectedStar={(rating) => this.onStarRatingPress(rating)}
+          />
+        </ImageBackground>
       </View>
     );
   }
@@ -72,11 +115,22 @@ class ViewShop extends Component {
 const styles = StyleSheet.create({
   title: {
     fontSize: 40,
+    color: 'white',
+  },
+  ratingTitle:{
+    color: 'white',
   },
   location: {
     fontSize: 25,
+    color: 'white',
   },
-  ratings: {},
+  ratings: {
+    color: 'white',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+  },
 });
 
 export default ViewShop;
