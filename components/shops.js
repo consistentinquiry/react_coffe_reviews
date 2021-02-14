@@ -6,11 +6,11 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableHighlight,
+  Alert,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 class Shops extends Component {
   constructor(props) {
     super(props);
@@ -51,15 +51,15 @@ class Shops extends Component {
 
   async login() {
     await this.getToken();
-    this.getShops();
   }
 
   async getToken() {
     try {
-      const stored = await AsyncStorage.getItem('token');
+      var stored = await AsyncStorage.getItem('token');
       console.log(
         '(shops) Got this token from storage: ' + JSON.stringify(stored),
       );
+
       if (stored) {
         this.setState({token: stored});
         this.getShops();
@@ -93,6 +93,24 @@ class Shops extends Component {
         console.debug("Here's the token: " + this.state.token);
       });
   }
+  onPressLike(id) {
+    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + id + '/favourite', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': this.state.token,
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        Alert.alert('Added to favourites!');
+      })
+      .catch((error) => {
+        console.error(error);
+        Alert.alert("That didn't work :(");
+      });
+  }
 
   render() {
     const navigation = this.props.navigation;
@@ -114,9 +132,10 @@ class Shops extends Component {
                   <Text style={styles.cardTitle}>{item.location_name}</Text>
                   <Text>{item.avg_overall_rating}</Text>
                   <Text>{item.location_town} </Text>
-                  <TouchableHighlight onPress={() => console.log('Pressed!')}>
+                  <TouchableHighlight onPress={(id) => this.onPressLike(id)}>
                     <View>
-                      <Icon name="thumbs-up" size={30} color="#900" />
+                      {}
+                      <Icon name={'heart'} size={30} />
                     </View>
                   </TouchableHighlight>
                 </View>
@@ -190,9 +209,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  button: {
-
-  }
+  favIcon: {
+    color: 'red',
+  },
 });
 
 export default Shops;

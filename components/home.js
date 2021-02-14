@@ -19,10 +19,9 @@ class Home extends Component {
     };
   }
 
-  // componentDidMount(){
-  //   this.getToken()
-
-  // }
+  componentDidMount() {
+    console.info('Loading...');
+  }
 
   // componentDidUpdate(prevProps, prevState)
   // {
