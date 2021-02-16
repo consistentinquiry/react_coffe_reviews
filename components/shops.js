@@ -7,6 +7,7 @@ import {
   ImageBackground,
   TouchableHighlight,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +17,8 @@ class Shops extends Component {
     super(props);
     this.state = {
       token: '',
+      authenticated: false,
+      isLoading: true,
       locationData: [],
       dummyData: [
         {
@@ -59,9 +62,8 @@ class Shops extends Component {
       console.log(
         '(shops) Got this token from storage: ' + JSON.stringify(stored),
       );
-
       if (stored) {
-        this.setState({token: stored});
+        this.setState({token: stored, authenticated: true});
         this.getShops();
       } else {
         console.error(
@@ -94,7 +96,8 @@ class Shops extends Component {
       });
   }
   onPressLike(id) {
-    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + id + '/favourite', {
+    console.debug('ID to be used: ' + id.id);
+    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + id.id + '/favourite', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -132,9 +135,9 @@ class Shops extends Component {
                   <Text style={styles.cardTitle}>{item.location_name}</Text>
                   <Text>{item.avg_overall_rating}</Text>
                   <Text>{item.location_town} </Text>
-                  <TouchableHighlight onPress={(id) => this.onPressLike(id)}>
+                  <TouchableHighlight
+                    onPress={() => this.onPressLike({id: item.location_id})}>
                     <View>
-                      {}
                       <Icon name={'heart'} size={30} />
                     </View>
                   </TouchableHighlight>
@@ -147,50 +150,6 @@ class Shops extends Component {
     );
   }
 }
-
-// render() {
-//   const navigation = this.props.navigation;
-//   console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
-//   if (this.state.token) {
-//     return (
-//       <View>
-//         <ImageBackground
-//           style={styles.backgroundImage}
-//           source={require('../img/cup.jpg')}>
-//           <FlatList
-//             data={this.state.dummyData}
-//             style={styles.container}
-//             renderItem={({item}) => (
-//               <TouchableOpacity
-//                 onPress={() =>
-//                   navigation.navigate('ViewShop', {id: item.location_id})
-//                 }>
-//                 <View style={styles.card}>
-//                   <Text style={styles.cardTitle}>{item.location_name}</Text>
-//                   <Text>{item.avg_overall_rating}</Text>
-//                   <Text>{item.location_town} </Text>
-//                   {console.log(
-//                     '[DEBUG] item= ' +
-//                       item.location_name +
-//                       ' in ' +
-//                       item.location_town,
-//                   )}
-//                 </View>
-//               </TouchableOpacity>
-//             )}
-//           />
-//         </ImageBackground>
-//       </View>
-//     );
-//   } else {
-//     return (
-//       <View>
-//         <Text>Not logged in, nothing to view! </Text>
-//       </View>
-//     );
-//   }
-// }
-// }
 
 const styles = StyleSheet.create({
   container: {

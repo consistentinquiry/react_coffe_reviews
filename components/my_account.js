@@ -8,6 +8,7 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -76,6 +77,16 @@ class MyAccount extends Component {
       });
   }
 
+  logout = () => {
+    console.log("Loggin you out...")
+    Alert.alert('You have logged out!');
+    AsyncStorage.clear();
+    const navigation = this.props.navigation;
+    console.info('Sending you home...');
+    this.render();
+    navigation.navigate('SignIn');
+  }
+
   render() {
     const navigation = this.props.navigation;
     if (this.state.isLoading) {
@@ -118,6 +129,9 @@ class MyAccount extends Component {
               </TouchableOpacity>
             )}
           />
+        </View>
+        <View>
+          <Button title="Logout" onPress={() => this.logout()} />
         </View>
       </View>
     );

@@ -144,6 +144,7 @@ class ViewShop extends Component {
                   </View>
                 </TouchableOpacity>
               )}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
         </ImageBackground>

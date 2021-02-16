@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
-import {Button, Text, View, TextInput, StyleSheet} from 'react-native';
+import {Button, Text, View, TextInput, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CreateUser from './create_user';
 import Home from './home';
+import {ActivityIndicator} from 'react-native-paper';
 
 class SignIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: true,
+      isLoading: false,
       userData: [],
       authenticated: false,
       email: '',
@@ -25,13 +26,14 @@ class SignIn extends Component {
       body: JSON.stringify({
         email: this.state.email,
         password: this.state.password,
+        response: [],
       }),
     })
       .then((response) => response.json())
       .then((json) => {
+        console.debug('Response.json = ' + json);
         console.log('[DEBUG] (sign in) - Storing token: ' + json.token);
         console.log('[DEBUG] (sign in) - Storing ID: ' + json.id);
-        this.state.authenticated = true;
         this.storeData(json);
         return json;
       })
@@ -45,41 +47,55 @@ class SignIn extends Component {
       await AsyncStorage.setItem('token', value.token);
       await AsyncStorage.setItem('id', JSON.stringify(value.id));
     } catch (e) {
-      console.log(
-        "[ERROR] - Something's gone wrong saving your token or ID: " + e,
-      );
+      console.error("Something's gone wrong saving your token or ID: " + e);
     }
   };
 
   login = () => {
-    this.postlogin();
+    console.debug('isLoading start of login(): ' + this.state.isLoading);
+    this.setState({isLoading: true}, () => {
+      console.debug('Forcing render...');
+      this.render();
+      this.postlogin();
+      console.debug('isLoading end of login(): ' + this.state.isLoading);
+    });
     this.props.navigation.navigate(Home);
+    this.setState({isLoading: false});
   };
 
   render() {
     const nav = this.props.navigation;
-    return (
-      <View>
+    console.log('Auto rendering...');
+    if (this.state.isLoading === false) {
+      return (
         <View>
-          <Text>Email:</Text>
-          <TextInput
-            placeholder="Enter email..."
-            onChangeText={(email) => this.setState({email})}
-          />
-          <Text>Password: </Text>
-          <TextInput
-            placeholder="password"
-            onChangeText={(password) => this.setState({password})}
-          />
-          <Button title="Log in" onPress={() => this.login(nav)} />
+          <View>
+            <Text>Email:</Text>
+            <TextInput
+              placeholder="Enter email..."
+              onChangeText={(email) => this.setState({email})}
+            />
+            <Text>Password: </Text>
+            <TextInput
+              placeholder="password"
+              onChangeText={(password) => this.setState({password})}
+            />
+            <Button title="Log in" onPress={() => this.login(nav)} />
+          </View>
+          <View>
+            <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>
+              No account? No problem!
+            </Text>
+          </View>
         </View>
+      );
+    } else {
+      return (
         <View>
-          <Text style={styles.link} onPress={() => nav.navigate(CreateUser)}>
-            No account? No problem!
-          </Text>
+          <ActivityIndicator size="large" />
         </View>
-      </View>
-    );
+      );
+    }
   }
 }
 
