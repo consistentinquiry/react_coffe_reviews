@@ -12,6 +12,7 @@ import SignIn from './components/sign_in';
 import CreateUser from './components/create_user';
 import ViewShop from './components/view_shop';
 import MyAccount from './components/my_account';
+import AddReview from './components/add_review';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -54,6 +55,7 @@ class App extends Component {
             options={{headerShown: true}}
           />
           <Stack.Screen name="MyAccount" component={MyAccount} />
+          <Stack.Screen name="AddReview" component={AddReview} />
         </Stack.Navigator>
       </NavigationContainer>
     );

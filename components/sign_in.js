@@ -18,7 +18,7 @@ class SignIn extends Component {
     };
   }
 
-  postlogin() {
+  async postlogin() {
     // console.log("[INFO] Posting login: " + this.state.email + " Password: " + this.state.password)
     return fetch('http://10.0.2.2:3333/api/1.0.0/user/login', {
       method: 'POST',
@@ -34,7 +34,6 @@ class SignIn extends Component {
         console.debug('Response.json = ' + json);
         console.log('[DEBUG] (sign in) - Storing token: ' + json.token);
         console.log('[DEBUG] (sign in) - Storing ID: ' + json.id);
-        this.storeData(json);
         return json;
       })
       .catch((error) => {
@@ -44,28 +43,22 @@ class SignIn extends Component {
 
   storeData = async (value) => {
     try {
-      await AsyncStorage.setItem('token', value.token);
+      console.debug('data: ' + JSON.stringify(value));
+      await AsyncStorage.setItem('token', JSON.stringify(value.token));
       await AsyncStorage.setItem('id', JSON.stringify(value.id));
     } catch (e) {
       console.error("Something's gone wrong saving your token or ID: " + e);
     }
   };
 
-  login = () => {
-    console.debug('isLoading start of login(): ' + this.state.isLoading);
-    this.setState({isLoading: true}, () => {
-      console.debug('Forcing render...');
-      this.render();
-      this.postlogin();
-      console.debug('isLoading end of login(): ' + this.state.isLoading);
-    });
+  async login() {
+    let data = await this.postlogin();
+    await this.storeData(data);
     this.props.navigation.navigate(Home);
-    this.setState({isLoading: false});
-  };
+  }
 
   render() {
     const nav = this.props.navigation;
-    console.log('Auto rendering...');
     if (this.state.isLoading === false) {
       return (
         <View>

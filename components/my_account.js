@@ -61,7 +61,10 @@ class MyAccount extends Component {
     fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.id, {
       method: 'GET',
       headers: {
-        'X-Authorization': this.state.token,
+        'X-Authorization': this.state.token.substring(
+          1,
+          this.state.token.length - 1,
+        ),
       },
     })
       .then((response) => response.json())

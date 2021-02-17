@@ -17,7 +17,6 @@ class Shops extends Component {
     super(props);
     this.state = {
       token: '',
-      authenticated: false,
       isLoading: true,
       locationData: [],
       dummyData: [
@@ -54,17 +53,14 @@ class Shops extends Component {
 
   async login() {
     await this.getToken();
+    await this.getShops();
   }
 
   async getToken() {
     try {
-      var stored = await AsyncStorage.getItem('token');
-      console.log(
-        '(shops) Got this token from storage: ' + JSON.stringify(stored),
-      );
+      const stored = await AsyncStorage.getItem('token');
       if (stored) {
-        this.setState({token: stored, authenticated: true});
-        this.getShops();
+        this.setState({token: stored});
       } else {
         console.error(
           '(shops) No token found, will not be able to make API calls',
@@ -75,12 +71,15 @@ class Shops extends Component {
     }
   }
 
-  getShops() {
+  async getShops() {
     console.log('[INFO] Fetching shops...');
     fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
       method: 'GET',
       headers: {
-        'X-Authorization': this.state.token,
+        'X-Authorization': this.state.token.substring(
+          1,
+          this.state.token.length - 1,
+        ),
       },
     })
       .then((response) => response.json())
@@ -88,13 +87,15 @@ class Shops extends Component {
         console.info('Setting state to reponse JSON...');
         this.setState({
           locationData: json,
+          isLoading: false,
         });
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Oh no: " + error);
         console.debug("Here's the token: " + this.state.token);
       });
   }
+
   onPressLike(id) {
     console.debug('ID to be used: ' + id.id);
     fetch('http://10.0.2.2:3333/api/1.0.0/location/' + id.id + '/favourite', {
@@ -118,36 +119,44 @@ class Shops extends Component {
   render() {
     const navigation = this.props.navigation;
     console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
-    return (
-      <View>
-        <ImageBackground
-          style={styles.backgroundImage}
-          source={require('../img/coffee.jpg')}>
-          <FlatList
-            data={this.state.locationData}
-            style={styles.container}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('ViewShop', {id: item.location_id})
-                }>
-                <View style={styles.card}>
-                  <Text style={styles.cardTitle}>{item.location_name}</Text>
-                  <Text>{item.avg_overall_rating}</Text>
-                  <Text>{item.location_town} </Text>
-                  <TouchableHighlight
-                    onPress={() => this.onPressLike({id: item.location_id})}>
-                    <View>
-                      <Icon name={'heart'} size={30} />
-                    </View>
-                  </TouchableHighlight>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </ImageBackground>
-      </View>
-    );
+    if (this.state.isLoading !== true) {
+      return (
+        <View>
+          <ImageBackground
+            style={styles.backgroundImage}
+            source={require('../img/coffee.jpg')}>
+            <FlatList
+              data={this.state.locationData}
+              style={styles.container}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ViewShop', {id: item.location_id})
+                  }>
+                  <View style={styles.card}>
+                    <Text style={styles.cardTitle}>{item.location_name}</Text>
+                    <Text>{item.avg_overall_rating}</Text>
+                    <Text>{item.location_town} </Text>
+                    <TouchableHighlight
+                      onPress={() => this.onPressLike({id: item.location_id})}>
+                      <View>
+                        <Icon name={'heart'} size={30} />
+                      </View>
+                    </TouchableHighlight>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </ImageBackground>
+        </View>
+      );
+    } else {
+      return (
+        <View>
+          <ActivityIndicator size="large" />
+        </View>
+      );
+    }
   }
 }
 

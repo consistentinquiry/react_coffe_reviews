@@ -68,6 +68,8 @@ class ViewShop extends Component {
     console.debug('Star pressed!');
   }
 
+  addReview(id) {}
+
   render() {
     console.debug('ID: ' + this.id);
     const navigation = this.props.navigation;
@@ -118,6 +120,13 @@ class ViewShop extends Component {
               selectedStar={(rating) => this.onStarRatingPress(rating)}
             />
           </View>
+          <View style={styles.myReviewBackgrounnd}>
+            <Text
+              onPress={() => navigation.navigate('AddReview', {id: this.id})}>
+              What did you think of {this.state.thisShop.location_name}? Write
+              your review here.
+            </Text>
+          </View>
           <View style={styles.reviewsBackground}>
             <Text style={styles.reviewsTitle}>
               Community reviews for {this.state.thisShop.location_name}:{' '}
@@ -162,6 +171,12 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   ratingsBackground: {
+    borderWidth: 2,
+    borderColor: '#777',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+  },
+  myReviewBackgrounnd: {
     borderWidth: 2,
     borderColor: '#777',
     padding: 20,
