@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Button} from 'react-native';
+import {Text, View, StyleSheet, Button, Alert} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import StarRating from 'react-native-star-rating';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class ViewShop extends Component {
   constructor(props) {
     super(props);
+    this.navigation = this.props.navigation;
     this.id = this.props.route.params.id;
     console.debug('REVIEWING SHOP: ' + this.id);
     this.state = {
@@ -66,8 +67,10 @@ class ViewShop extends Component {
       .then((response) => response.status)
       .then((status) => {
         console.debug('Response.status = ' + status);
-        if (status === 200) {
+        if (status === 201) {
           console.info('Review posted successfully!');
+          Alert.alert('Review posted!');
+          this.navigation.navigate('ViewShop', {id: this.id});
         }
       })
       .catch((error) => {

@@ -23,29 +23,6 @@ class Home extends Component {
     console.info('Loading...');
   }
 
-  // componentDidUpdate(prevProps, prevState)
-  // {
-  //   if (prevState.authenticated == true)
-  // }
-
-  // async getToken(){
-  //   try{
-  //     let stored = await AsyncStorage.getItem("token")
-  //     console.log("[DEBUG] (home) Got this token from storage: " + JSON.stringify(stored))
-  //     if(stored){
-  //       this.setState({token: stored})
-  //       this.setState({authenticated: true})
-  //     }
-  //     else{
-  //       this.setState({authenticated: false})
-  //       console.log("[INFO] (home) No token found, setting as not logged in")
-  //     }
-  //   }
-  //   catch(e){
-  //     console.log("[ERROR] Somethings gone wrong retrieving token (home): " + e)
-  //   }
-  // }
-
   render() {
     return (
       <Tab.Navigator
@@ -54,19 +31,6 @@ class Home extends Component {
           activeTintColor: 'tomato',
           inactiveTintColor: 'gray',
         }}>
-        {/* <Tab.Screen
-                name="Reviews"
-                component={Reviews}
-                options={{
-                tabBarLabel: 'Reviews',
-                tabBarIcon: ({ color, size }) => (
-                    <MaterialCommunityIcons
-                      name="coffee"
-                      color={color}
-                      size={size}
-                       />
-                  ),
-              }} /> */}
         <Tab.Screen
           name="Shops"
           component={Shops}

@@ -15,71 +15,59 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome';
 class Shops extends Component {
   constructor(props) {
     super(props);
+    this.navigation = this.props.navigation;
     this.state = {
       token: '',
+      userID: '',
       isLoading: true,
       locationData: [],
-      dummyData: [
-        {
-          location_id: 73,
-          location_name: "Aunt Mary's Great Coffee Shop",
-          location_town: 'London',
-          latitude: 74.567,
-          longitude: 102.435,
-          photo_path: 'http://cdn.coffida.com/images/78346822.jpg',
-          avg_overall_rating: 4.5,
-          avg_price_rating: 4.3,
-          avg_quality_rating: 4,
-          avg_clenliness_rating: 3.8,
-          location_reviews: [
-            {
-              review_id: 643,
-              overall_rating: 4,
-              price_rating: 2,
-              quality_rating: 3,
-              clenliness_rating: 5,
-              review_body: 'Great coffee, but the bathrooms stank!',
-              likes: 4654,
-            },
-          ],
-        },
-      ],
+      userData: [],
     };
   }
 
   componentDidMount() {
-    this.login();
+    const unsubscribe = this.navigation.addListener('focus', () => {
+      this.loadData();
+    });
   }
 
-  async login() {
-    await this.getToken();
+  async loadData() {
+    await this.retrieveCredentials();
     await this.getShops();
+    await this.getUser();
+    console.log(JSON.stringify(this.state.userData));
   }
 
-  async getToken() {
+  async retrieveCredentials() {
     try {
-      const stored = await AsyncStorage.getItem('token');
-      if (stored) {
-        this.setState({token: stored});
+      const token = await AsyncStorage.getItem('token');
+      const id = await AsyncStorage.getItem('id');
+      console.log(
+        '(my account) Got this token & id from storage: \n' +
+          JSON.stringify(token) +
+          '\n' +
+          JSON.stringify(id),
+      );
+      if (token && id) {
+        this.setState({token: token});
+        this.setState({userID: id});
       } else {
-        console.error(
-          '(shops) No token found, will not be able to make API calls',
-        );
+        console.error('No token & id found');
       }
     } catch (e) {
-      console.error('Somethings gone wrong retrieving token (home): ' + e);
+      console.error('Somethings gone wrong retrieving token: ' + e);
     }
   }
 
   async getShops() {
-    console.log('[INFO] Fetching shops...');
+    console.log('Fetching shops...');
     fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
       method: 'GET',
       headers: {
         'X-Authorization': this.state.token.substring(
           1,
           this.state.token.length - 1,
-        ),
+        ), //this gross little fix was needed becuase for some reason double quotes were being added to the token
       },
     })
       .then((response) => response.json())
@@ -91,34 +79,66 @@ class Shops extends Component {
         });
       })
       .catch((error) => {
-        console.error("Oh no: " + error);
+        console.error('Oh no: ' + error);
         console.debug("Here's the token: " + this.state.token);
       });
   }
 
-  onPressLike(id) {
-    console.debug('ID to be used: ' + id.id);
-    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + id.id + '/favourite', {
-      method: 'POST',
+  async getUser() {
+    console.log('Fetching user...');
+    fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-Authorization': this.state.token,
+        'X-Authorization': this.state.token.substring(
+          1,
+          this.state.token.length - 1,
+        ),
       },
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
-        Alert.alert('Added to favourites!');
+        console.log('Got this user data:' + JSON.stringify(json));
+        this.setState({
+          userData: json,
+        });
+        console.info('Set userData state to: ' + this.state.userID);
+      })
+      .catch((error) => {
+        console.error("Something's gone wrong in getUser");
+        console.error(error);
+      });
+  }
+
+  onPressLike(reviewID) {
+    console.debug('ID to be used: ' + reviewID);
+    fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' + reviewID.id + '/favourite',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': this.state.token.substring(
+            1,
+            this.state.token.length - 1,
+          ), //this gross little fix was needed becuase for some reason double quotes were being added to the token
+        },
+      },
+    )
+      .then((response) => response.status)
+      .then((status) => {
+        console.debug('Response.status = ' + status);
+        if (status === 200) {
+          console.info('Added shop to your favourites!');
+          Alert.alert('Added shop to your favourites!');
+        }
       })
       .catch((error) => {
         console.error(error);
-        Alert.alert("That didn't work :(");
       });
   }
 
   render() {
-    const navigation = this.props.navigation;
-    console.log('[DEBUG] (shops.render()) token: ' + this.state.token);
+    console.log('(shops.render()) token: ' + this.state.token);
     if (this.state.isLoading !== true) {
       return (
         <View>
@@ -128,10 +148,11 @@ class Shops extends Component {
             <FlatList
               data={this.state.locationData}
               style={styles.container}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.navigate('ViewShop', {id: item.location_id})
+                    this.navigation.navigate('ViewShop', {id: item.location_id})
                   }>
                   <View style={styles.card}>
                     <Text style={styles.cardTitle}>{item.location_name}</Text>
