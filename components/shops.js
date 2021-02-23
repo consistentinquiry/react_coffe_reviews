@@ -12,6 +12,8 @@ import {
 import {TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import StarRating from 'react-native-star-rating';
+
 class Shops extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +21,7 @@ class Shops extends Component {
     this.state = {
       token: '',
       userID: '',
+      favLocations: [],
       isLoading: true,
       locationData: [],
       userData: [],
@@ -35,7 +38,9 @@ class Shops extends Component {
     await this.retrieveCredentials();
     await this.getShops();
     await this.getUser();
-    console.log(JSON.stringify(this.state.userData));
+    // console.log('USERDATA:' + JSON.stringify(this.state.userData));
+    // console.log('USERDATA + FAVLOCATION' + JSON.stringify(this.state.userData.favourite_locations));
+    // await this.getFavLocations();
   }
 
   async retrieveCredentials() {
@@ -97,16 +102,31 @@ class Shops extends Component {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log('Got this user data:' + JSON.stringify(json));
+        // console.log('Got this user data:' + JSON.stringify(json));
         this.setState({
           userData: json,
         });
-        console.info('Set userData state to: ' + this.state.userID);
+        this.getFavLocations();
+        // console.info('Set userData state to: ' + this.state.userID);
       })
       .catch((error) => {
         console.error("Something's gone wrong in getUser");
         console.error(error);
       });
+  }
+
+  async getFavLocations() {
+    var i;
+    var len = Object.keys(this.state.userData.favourite_locations).length;
+    console.debug('SHOPS number of keys: ' + len);
+    for (i = 0; i < len; i++) {
+      this.state.favLocations[i] = this.state.userData.favourite_locations[
+        i
+      ].location_id;
+    }
+    for (i = 0; i < this.state.favLocations.length; i++) {
+      console.debug('FAV LOCATION ' + [i] + ' = ' + this.state.favLocations[i]);
+    }
   }
 
   onPressLike(reviewID) {
@@ -156,12 +176,22 @@ class Shops extends Component {
                   }>
                   <View style={styles.card}>
                     <Text style={styles.cardTitle}>{item.location_name}</Text>
-                    <Text>{item.avg_overall_rating}</Text>
+                    <StarRating
+                      fullStarColor={'gold'}
+                      maxStars={5}
+                      starSize={15}
+                      rating={item.avg_overall_rating}
+                    />
                     <Text>{item.location_town} </Text>
                     <TouchableHighlight
                       onPress={() => this.onPressLike({id: item.location_id})}>
                       <View>
-                        <Icon name={'heart'} size={30} />
+                        {console.log('SHOPS CURRENT LOCATION ID: ' + item.location_id)}
+                        {this.state.favLocations.includes(item.location_id) ? (
+                          <Icon name={'heart'} size={30} color={'#900'} />
+                        ) : (
+                          <Icon name={'heart'} size={30} color={'black'} />
+                        )}
                       </View>
                     </TouchableHighlight>
                   </View>

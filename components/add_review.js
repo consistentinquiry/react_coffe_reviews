@@ -42,11 +42,6 @@ class ViewShop extends Component {
   }
 
   async postReview() {
-    // console.log(this.state.overallRating);
-    // console.log(this.state.avgPriceRating);
-    // console.log(this.state.avgQualityRating);
-    // console.log(this.staclenliness_rating);
-    // console.log(this.state.reviewBody);
     return fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' + this.id + '/review/',
       {
@@ -98,12 +93,40 @@ class ViewShop extends Component {
     this.setState({avgClenlinessRating: value});
   }
 
-  submitOnPress() {
-    console.debug('AvgClenlinessRating: ' + this.state.avgClenlinessRating);
-    console.debug('AvgQualityRating: ' + this.state.avgQualityRating);
-    console.debug('AvgPriceRating: ' + this.state.avgPriceRating);
-    console.debug('Overall rating: ' + this.state.overallRating);
-    console.debug('Review body: ' + this.state.reviewBody);
+  submitReview() {
+    console.debug('Profane? ' + this.detectProfanity());
+    if (this.detectProfanity()) {
+      Alert.alert(
+        'You used a naughty term, your review was not posted. Try again but this time without such filth!',
+      );
+    } else {
+      console.log('No filth detected, you may post.');
+      this.postReview();
+    }
+  }
+
+  detectProfanity() {
+    console.debug('REVIEW BODY:' + this.state.reviewBody);
+    const profanity = [
+      'tea',
+      'Tea',
+      'teas',
+      'Teas',
+      'cakes',
+      'cake',
+      'Cake',
+      'Cakes',
+      'Pastry',
+      'Pastries',
+      'pastry',
+      'pastries',
+    ];
+    if (this.state.reviewBody.includes(...profanity)) {
+      return true;
+    } else {
+      console.log('No profanity detected!');
+      return false;
+    }
   }
 
   render() {
@@ -157,7 +180,7 @@ class ViewShop extends Component {
             onChangeText={(text) => this.setState({reviewBody: text})}
           />
         </View>
-        <Button title="Submit" onPress={() => this.postReview()} />
+        <Button title="Submit" onPress={() => this.submitReview()} />
       </View>
     );
   }

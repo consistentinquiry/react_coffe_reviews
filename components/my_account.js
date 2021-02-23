@@ -24,6 +24,9 @@ class MyAccount extends Component {
       isLoading: true,
       userID: '',
       user_data: [],
+      first_name: '',
+      last_name: '',
+      email: '',
       reviews: [],
       liked_reviews: [],
       token: '',
@@ -70,8 +73,12 @@ class MyAccount extends Component {
     })
       .then((response) => response.json())
       .then((json) => {
+        console.log('JSON: ' + JSON.stringify(json));
         this.setState({
           user_data: json,
+          first_name: json.first_name,
+          last_name: json.last_name,
+          email: json.email,
         });
       })
       .catch((error) => {
@@ -79,40 +86,46 @@ class MyAccount extends Component {
       });
   }
 
-  updateUser() {
-    console.debug(
-      'WILL UPDATE USER WITH: ' +
-        this.state.user_data.first_name +
+  printUserDataState() {
+    console.log(
+      'user data state: ' +
+        this.state.first_name +
         ' ' +
-        this.state.user_data.second_name +
+        this.state.last_name +
         ' ' +
-        this.state.user_data.email,
+        this.state.email,
     );
-    fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
+  }
+
+  updateUser() {
+    console.log('Updating user...');
+    return fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
       method: 'PATCH',
       headers: {
+        'Content-Type': 'application/json',
         'X-Authorization': this.state.token.substring(
           1,
           this.state.token.length - 1,
         ),
       },
       body: JSON.stringify({
-        first_name: this.state.user_data.first_name,
-        second_name: this.state.user_data.last_name,
-        email: this.state.user_data.email,
+        first_name: this.state.first_name,
+        last_name: this.state.last_name,
+        email: this.state.email,
       }),
     })
-      .then((response) => response.status)
-      .then((status) => {
-        console.debug('Response.status = ' + status);
-        if (status === 200) {
-          console.info('Profile updated successfully!');
+      .then((response) => {
+        if (response.ok) {
+          const nav = this.props.navigation;
           Alert.alert('User updated!');
-          this.navigation.navigate('MyAccount');
+          nav.navigate('Home');
         }
       })
       .catch((error) => {
-        console.error(error);
+        Alert.alert(
+          "Something went wrong updating your account. Here's some more specific info:\n " +
+            error,
+        );
       });
   }
 
@@ -137,7 +150,7 @@ class MyAccount extends Component {
         if (status === 200) {
           console.info('Removed shop from your favourites!');
           Alert.alert('Removed shop from your favourites!');
-          this.navigation.navigate('MyAccount');
+          this.navigation.navigate('Home');
         }
       })
       .catch((error) => {
@@ -167,7 +180,7 @@ class MyAccount extends Component {
         if (status === 200) {
           console.info('Removed review!');
           Alert.alert('Removed review!');
-          this.navigation.navigate('MyAccount');
+          this.navigation.navigate('Home');
         }
       })
       .catch((error) => {
@@ -176,7 +189,7 @@ class MyAccount extends Component {
   }
 
   logout = () => {
-    console.log('Loggin you out...');
+    console.log('Logging you out...');
     Alert.alert('You have logged out!');
     AsyncStorage.clear();
     console.info('Sending you home...');
@@ -196,15 +209,24 @@ class MyAccount extends Component {
           <View style={styles.card}>
             <View style={styles.card}>
               <Text> First name: </Text>
-              <TextInput defaultValue={this.state.user_data.first_name} />
+              <TextInput
+                defaultValue={this.state.user_data.first_name}
+                onChangeText={(first_name) => this.setState({first_name})}
+              />
             </View>
             <View style={styles.card}>
               <Text> Second name: </Text>
-              <TextInput defaultValue={this.state.user_data.last_name} />
+              <TextInput
+                defaultValue={this.state.user_data.last_name}
+                onChangeText={(last_name) => this.setState({last_name})}
+              />
             </View>
             <View style={styles.card}>
               <Text> Email: </Text>
-              <TextInput defaultValue={this.state.user_data.email} />
+              <TextInput
+                defaultValue={this.state.user_data.email}
+                onChangeText={(email) => this.setState({email})}
+              />
             </View>
             <Button
               title="Update"
@@ -226,7 +248,13 @@ class MyAccount extends Component {
                   }>
                   <View style={styles.card}>
                     <Text style={styles.cardTitle}>{item.location_name}</Text>
-                    <Text>{item.avg_overall_rating}</Text>
+                    {/* <Text>{item.avg_overall_rating}</Text> */}
+                    <StarRating
+                      fullStarColor={'gold'}
+                      maxStars={5}
+                      starSize={10}
+                      rating={item.avg_overall_rating}
+                    />
                     <Text>{item.location_town} </Text>
                     <TouchableHighlight
                       onPress={() =>
@@ -248,8 +276,12 @@ class MyAccount extends Component {
               style={styles.container}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({item}) => (
-                <TouchableOpacity onPress={() => console.log('Review pressed')}>
-                  {console.debug('ITEM:' + JSON.stringify(item))}
+                <TouchableOpacity
+                  onPress={() =>
+                    this.navigation.navigate('ViewReview', {
+                      id: item.review.review_id,
+                    })
+                  }>
                   <View style={styles.reviewBackground}>
                     <StarRating
                       fullStarColor={'gold'}

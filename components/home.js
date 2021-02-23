@@ -4,7 +4,7 @@ import Shops from './shops';
 import Search from './search';
 import MyAccount from './my_account';
 
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -37,7 +37,7 @@ class Home extends Component {
           options={{
             tabBarLabel: 'Shops',
             tabBarIcon: ({color, size}) => (
-              <MaterialIcons name="store" color={color} size={size} />
+              <Icon name="coffee" color={color} size={size} />
             ),
           }}
         />
@@ -47,7 +47,7 @@ class Home extends Component {
           options={{
             tabBarLabel: 'Search',
             tabBarIcon: ({color, size}) => (
-              <MaterialIcons name="magnify" color={color} size={size} />
+              <Icon name="search" color={color} size={size} />
             ),
           }}
         />
@@ -57,7 +57,7 @@ class Home extends Component {
           options={{
             tabBarLabel: 'Me',
             tabBarIcon: ({color, size}) => (
-              <MaterialIcons name="account-box" color={color} size={size} />
+              <Icon name="address-card" color={color} size={size} />
             ),
           }}
         />

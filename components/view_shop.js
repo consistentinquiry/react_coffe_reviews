@@ -7,7 +7,6 @@ import {
   FlatList,
   TouchableOpacity,
   TouchableHighlight,
-  AppState,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating';
@@ -144,6 +143,7 @@ class ViewShop extends Component {
               <FlatList
                 data={this.state.thisShop.location_reviews}
                 style={styles.container}
+                keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
                   <TouchableOpacity
                     onPress={() => console.log('Review pressed')}>
@@ -158,15 +158,15 @@ class ViewShop extends Component {
                       )}
                       <Text>{item.review_body}</Text>
                       <Text>Likes: {item.likes} </Text>
-                      {/* <TouchableHighlight onPress={() => console.log('Pressed!')}>
-                      <View>
-                        <Icon name="heart" size={30} color="#900" />{' '}
-                      </View>
-                    </TouchableHighlight> */}
+                      <TouchableHighlight
+                        onPress={() => console.log('Pressed!')}>
+                        <View>
+                          <Icon name="thumbs-up" size={30} color="#900" />
+                        </View>
+                      </TouchableHighlight>
                     </View>
                   </TouchableOpacity>
                 )}
-                keyExtractor={(item, index) => index.toString()}
               />
             </View>
           </ImageBackground>
