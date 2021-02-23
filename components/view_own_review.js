@@ -1,36 +1,51 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Button, Alert} from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
-import StarRating from 'react-native-star-rating';
+import {Text, View, TextInput, Button, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import StarRating from 'react-native-star-rating';
 
-class ViewShop extends Component {
+class ViewReview extends Component {
   constructor(props) {
     super(props);
     this.navigation = this.props.navigation;
-    this.id = this.props.route.params.id;
-    console.debug('REVIEWING SHOP: ' + this.id);
+    this.reviewID = this.props.route.params.id;
     this.state = {
       token: '',
       thisReview: [],
+      reviewID: '',
       overallRating: 0,
       avgPriceRating: 0,
       avgQualityRating: 0,
       avgClenlinessRating: 0,
+      userID: '',
       reviewBody: '',
+      user_data: [],
+      likes: '',
+      locationName: '',
+      locationID: '',
     };
   }
 
   componentDidMount() {
-    this.getToken();
+    this.loadData();
+  }
+
+  async loadData() {
+    await this.getToken();
+    console.log('VIEW REVIEW reviewID: ' + this.reviewID);
+    console.log(
+      'VIEW REVIEW route stringification:' + JSON.stringify(this.props.route),
+    );
+    await this.getUser();
   }
 
   async getToken() {
     try {
       const stored = await AsyncStorage.getItem('token');
-      if (stored) {
+      const id = await AsyncStorage.getItem('id');
+      if (stored && id) {
         const token = stored.substring(1, stored.length - 1);
         this.setState({token: token});
+        this.setState({userID: id});
       } else {
         console.error(
           '(shops) No token found, will not be able to make API calls',
@@ -41,35 +56,47 @@ class ViewShop extends Component {
     }
   }
 
-  async postReview() {
-    return fetch(
-      'http://10.0.2.2:3333/api/1.0.0/location/' + this.id + '/review/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Authorization': this.state.token,
-        },
-        body: JSON.stringify({
-          overall_rating: this.state.overallRating,
-          price_rating: this.state.avgPriceRating,
-          quality_rating: this.state.avgQualityRating,
-          clenliness_rating: this.state.avgClenlinessRating,
-          review_body: this.state.reviewBody,
-        }),
+  async loadReview() {
+    var reviews = this.state.user_data.reviews;
+    var i;
+    for (i = 0; i <= reviews.length; i++) {
+      if (reviews[i].review.review_id === this.reviewID) {
+        this.setOverallRating(reviews[i].review.overall_rating);
+        this.setAvgPriceRating(reviews[i].review.price_rating);
+        this.setAvgQualityRating(reviews[i].review.quality_rating);
+        this.setAvgClenlinessRating(reviews[i].review.clenliness_rating);
+        this.setState({
+          reviewID: reviews[i].review.review_id,
+          reviewBody: reviews[i].review.review_body,
+          likes: reviews[i].review.likes,
+          locationName: reviews[i].location.location_name,
+          locationID: reviews[i].location.location_id,
+        });
+      }
+    }
+
+    // thisReview = reviews.find((item) => item.name === this.reviewID);
+    // console.log('VIEW REVIEW, THIS REVIEW: ' + thisReview);
+  }
+
+  async getUser() {
+    console.log('Fetching user: ' + this.state.userID);
+    fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
+      method: 'GET',
+      headers: {
+        'X-Authorization': this.state.token,
       },
-    )
-      .then((response) => response.status)
-      .then((status) => {
-        console.debug('Response.status = ' + status);
-        if (status === 201) {
-          console.info('Review posted successfully!');
-          Alert.alert('Review posted!');
-          this.navigation.navigate('ViewShop', {id: this.id});
-        }
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log('JSON: ' + JSON.stringify(json));
+        this.setState({
+          user_data: json,
+        });
+        this.loadReview();
       })
       .catch((error) => {
-        console.error(error);
+        console.error('VIEW REVIEW getUser() error: ' + error);
       });
   }
 
@@ -93,47 +120,50 @@ class ViewShop extends Component {
     this.setState({avgClenlinessRating: value});
   }
 
-  submitReview() {
-    console.debug('Profane? ' + this.detectProfanity());
-    if (this.detectProfanity()) {
-      Alert.alert(
-        'You used a naughty term, your review was not posted. Try again but this time without such filth!',
-      );
-    } else {
-      console.log('No filth detected, you may post.');
-      this.postReview();
-    }
-  }
-
-  detectProfanity() {
-    console.debug('REVIEW BODY:' + this.state.reviewBody);
-    const profanity = [
-      'tea',
-      'Tea',
-      'teas',
-      'Teas',
-      'cakes',
-      'cake',
-      'Cake',
-      'Cakes',
-      'Pastry',
-      'Pastries',
-      'pastry',
-      'pastries',
-    ];
-    if (this.state.reviewBody.includes(...profanity)) {
-      return true;
-    } else {
-      console.log('No profanity detected!');
-      return false;
-    }
+  updateReview() {
+    console.log('Updating review...');
+    return fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+        this.state.locationID +
+        '/review/' +
+        this.state.reviewID,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': this.state.token,
+        },
+        body: JSON.stringify({
+          overall_rating: this.state.overallRating,
+          price_rating: this.state.avgPriceRating,
+          quality_rating: this.state.avgQualityRating,
+          clenliness_rating: this.state.avgClenlinessRating,
+          review_body: this.state.reviewBody,
+        }),
+      },
+    )
+      .then((response) => {
+        if (response.ok) {
+          const nav = this.props.navigation;
+          Alert.alert('Review updated!');
+          nav.navigate('MyAccount');
+        }
+      })
+      .catch((error) => {
+        Alert.alert(
+          "Something went wrong updating your review. Here's some more specific info:\n " +
+            error,
+        );
+      });
   }
 
   render() {
     return (
       <View>
         <View>
-          <Text style={styles.title}>New review</Text>
+          <Text style={styles.title}>
+            Edit review for {this.state.locationName}
+          </Text>
         </View>
         <View style={styles.ratingsBackground}>
           <Text style={styles.ratingTitle}>Average overall_rating: </Text>
@@ -173,17 +203,14 @@ class ViewShop extends Component {
             selectedStar={(rating) => this.setAvgClenlinessRating(rating)}
           />
         </View>
-        <View style={styles.ratingsBackground}>
-          <Text>Add a pic? It'll be quick...</Text>
-        </View>
         <View style={styles.myReviewBackgrounnd}>
           <Text> Tell us what you thought about the place: </Text>
           <TextInput
-            placeholder="Any thoughts? Don't hold back..."
+            defaultValue={this.state.reviewBody}
             onChangeText={(text) => this.setState({reviewBody: text})}
           />
         </View>
-        <Button title="Submit" onPress={() => this.submitReview()} />
+        <Button title="Update" onPress={() => this.updateReview()} />
       </View>
     );
   }
@@ -217,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewShop;
+export default ViewReview;

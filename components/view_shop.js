@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   TouchableHighlight,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating';
@@ -73,6 +74,39 @@ class ViewShop extends Component {
   }
 
   addReview(id) {}
+
+  likeReview(reviewID) {
+    console.debug('ID to be used: ' + reviewID);
+    fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+        this.id +
+        '/review/' +
+        reviewID +
+        '/like',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': this.state.token.substring(
+            1,
+            this.state.token.length - 1,
+          ), //this gross little fix was needed becuase for some reason double quotes were being added to the token
+        },
+      },
+    )
+      .then((response) => response.status)
+      .then((status) => {
+        console.debug('Response.status = ' + status);
+        if (status === 200) {
+          console.info('Liked review!');
+          Alert.alert('Liked review!');
+          this.navigation.navigate('ViewShop', {id: this.id});
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   render() {
     const navigation = this.props.navigation;
@@ -146,20 +180,26 @@ class ViewShop extends Component {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
                   <TouchableOpacity
-                    onPress={() => console.log('Review pressed')}>
+                    onPress={() =>
+                      navigation.navigate('ViewReview', {
+                        locationID: this.id,
+                        reviewID: item.review_id,
+                      })
+                    }>
                     <View style={styles.reviewBackground}>
                       <StarRating
                         fullStarColor={'gold'}
                         maxStars={5}
                         rating={item.overall_rating}
                       />
+                      {console.log('VIEW SHOP item.location_id: ' + this.id)}
                       {console.log(
-                        '(Review) avg_rating:' + item.overall_rating,
+                        'VIEW SHOP item.review_id: ' + item.review_id,
                       )}
                       <Text>{item.review_body}</Text>
                       <Text>Likes: {item.likes} </Text>
                       <TouchableHighlight
-                        onPress={() => console.log('Pressed!')}>
+                        onPress={() => this.likeReview(item.review_id)}>
                         <View>
                           <Icon name="thumbs-up" size={30} color="#900" />
                         </View>

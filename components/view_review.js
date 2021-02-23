@@ -7,11 +7,11 @@ class ViewReview extends Component {
   constructor(props) {
     super(props);
     this.navigation = this.props.navigation;
-    this.reviewID = this.props.route.params.id;
+    this.reviewID = this.props.route.params.reviewID;
+    this.locationID = this.props.route.params.locationID;
     this.state = {
       token: '',
       thisReview: [],
-      reviewID: '',
       overallRating: 0,
       avgPriceRating: 0,
       avgQualityRating: 0,
@@ -21,7 +21,8 @@ class ViewReview extends Component {
       user_data: [],
       likes: '',
       locationName: '',
-      locationID: '',
+      locationData: [],
+      reviewImageData: [],
     };
   }
 
@@ -30,12 +31,11 @@ class ViewReview extends Component {
   }
 
   async loadData() {
+    console.log('VIEW REVIEW reviewID:' + this.reviewID);
+    console.log('VIEW REVIEW locationID:' + this.locationID);
     await this.getToken();
-    console.log('VIEW REVIEW reviewID: ' + this.reviewID);
-    console.log(
-      'VIEW REVIEW route stringification:' + JSON.stringify(this.props.route),
-    );
-    await this.getUser();
+    await this.getLocation();
+    await this.getPhotos();
   }
 
   async getToken() {
@@ -57,31 +57,54 @@ class ViewReview extends Component {
   }
 
   async loadReview() {
-    var reviews = this.state.user_data.reviews;
+    var reviews = this.state.locationData.location_reviews;
+    console.log('reviews: ' + JSON.stringify(reviews));
+    console.log('reviews len: ' + reviews.length);
     var i;
     for (i = 0; i <= reviews.length; i++) {
-      if (reviews[i].review.review_id === this.reviewID) {
-        this.setOverallRating(reviews[i].review.overall_rating);
-        this.setAvgPriceRating(reviews[i].review.price_rating);
-        this.setAvgQualityRating(reviews[i].review.quality_rating);
-        this.setAvgClenlinessRating(reviews[i].review.clenliness_rating);
+      if (reviews[i].review_id === this.reviewID) {
+        console.log(
+          'VIEW REVIEW matching review: ' + JSON.stringify(reviews[i]),
+        );
+        this.setOverallRating(reviews[i].overall_rating);
+        this.setAvgPriceRating(reviews[i].price_rating);
+        this.setAvgQualityRating(reviews[i].quality_rating);
+        this.setAvgClenlinessRating(reviews[i].clenliness_rating);
         this.setState({
-          reviewID: reviews[i].review.review_id,
-          reviewBody: reviews[i].review.review_body,
-          likes: reviews[i].review.likes,
-          locationName: reviews[i].location.location_name,
-          locationID: reviews[i].location.location_id,
+          reviewID: reviews[i].review_id,
+          reviewBody: reviews[i].review_body,
+          likes: reviews[i].likes,
         });
       }
     }
-
-    // thisReview = reviews.find((item) => item.name === this.reviewID);
-    // console.log('VIEW REVIEW, THIS REVIEW: ' + thisReview);
   }
 
-  async getUser() {
-    console.log('Fetching user: ' + this.state.userID);
-    fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
+  async getPhotos() {
+    console.log('Getting photos...');
+    fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+        this.locationID +
+        '/review/' +
+        this.reviewID +
+        '/photo',
+      {
+        method: 'GET',
+        headers: {
+          'X-Authorization': this.state.token,
+        },
+      },
+    )
+      .then((response) => response)
+      .then((response) => {
+        console.log('img response: ' + JSON.stringify(response));
+      })
+      .catch((error) => {
+        console.error('VIEW REVIEW getUser() error: ' + error);
+      });
+  }
+
+  async getLocation() {
+    fetch('http://10.0.2.2:3333/api/1.0.0/location/' + this.locationID, {
       method: 'GET',
       headers: {
         'X-Authorization': this.state.token,
@@ -89,9 +112,9 @@ class ViewReview extends Component {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log('JSON: ' + JSON.stringify(json));
+        // console.log('LOCATION JSON: ' + JSON.stringify(json));
         this.setState({
-          user_data: json,
+          locationData: json,
         });
         this.loadReview();
       })
@@ -120,50 +143,11 @@ class ViewReview extends Component {
     this.setState({avgClenlinessRating: value});
   }
 
-  updateReview() {
-    console.log('Updating review...');
-    return fetch(
-      'http://10.0.2.2:3333/api/1.0.0/location/' +
-        this.state.locationID +
-        '/review/' +
-        this.state.reviewID,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Authorization': this.state.token,
-        },
-        body: JSON.stringify({
-          overall_rating: this.state.overallRating,
-          price_rating: this.state.avgPriceRating,
-          quality_rating: this.state.avgQualityRating,
-          clenliness_rating: this.state.avgClenlinessRating,
-          review_body: this.state.reviewBody,
-        }),
-      },
-    )
-      .then((response) => {
-        if (response.ok) {
-          const nav = this.props.navigation;
-          Alert.alert('Review updated!');
-          nav.navigate('MyAccount');
-        }
-      })
-      .catch((error) => {
-        Alert.alert(
-          "Something went wrong updating your review. Here's some more specific info:\n " +
-            error,
-        );
-      });
-  }
-
   render() {
     return (
       <View>
         <View>
-          <Text style={styles.title}>
-            Edit review for {this.state.locationName}
-          </Text>
+          <Text style={styles.title}>Review for {this.state.locationName}</Text>
         </View>
         <View style={styles.ratingsBackground}>
           <Text style={styles.ratingTitle}>Average overall_rating: </Text>
@@ -203,14 +187,16 @@ class ViewReview extends Component {
             selectedStar={(rating) => this.setAvgClenlinessRating(rating)}
           />
         </View>
+        <View style={styles.ratingsBackground}>
+          <Text>Images will go here</Text>
+        </View>
         <View style={styles.myReviewBackgrounnd}>
-          <Text> Tell us what you thought about the place: </Text>
+          <Text> User thoughts on : </Text>
           <TextInput
             defaultValue={this.state.reviewBody}
             onChangeText={(text) => this.setState({reviewBody: text})}
           />
         </View>
-        <Button title="Update" onPress={() => this.updateReview()} />
       </View>
     );
   }
