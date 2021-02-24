@@ -1,0 +1,1 @@
+When should a class be used and when should a function be used? At the moment im using a class and extending Component for all parts of the application.

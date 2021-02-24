@@ -1,0 +1,23 @@
+info Running jetifier to migrate libraries to AndroidX. You can disable it using "--no-jetifier" flag.
+Jetifier found 1242 file(s) to forward-jetify. Using 4 workers...
+info JS server already running.
+info Installing the app...
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/home/john/Documents/university/mobile_applications/assignment/react_coffe_reviews/react_app/coffee_app/android/build.gradle' line: 39
+
+* What went wrong:
+A problem occurred evaluating root project 'coffee_app'.
+> Could not find method defaultConfig() for arguments [build_b8b3f7pqwdtnood3h0ous13ex$_run_closure2@50fd77be] on root project 'coffee_app' of type org.gradle.api.Project.
+
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 2s
+
+Error: Command failed: ./gradlew app:installDebug -PreactNativeDevServerPort=8081
+
