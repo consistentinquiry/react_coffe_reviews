@@ -186,7 +186,6 @@ class Shops extends Component {
                     <TouchableHighlight
                       onPress={() => this.onPressLike({id: item.location_id})}>
                       <View>
-                        {console.log('SHOPS CURRENT LOCATION ID: ' + item.location_id)}
                         {this.state.favLocations.includes(item.location_id) ? (
                           <Icon name={'heart'} size={30} color={'#900'} />
                         ) : (

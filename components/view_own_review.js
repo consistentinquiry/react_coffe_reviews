@@ -3,7 +3,7 @@ import {Text, View, TextInput, Button, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating';
 
-class ViewReview extends Component {
+class ViewOwnReview extends Component {
   constructor(props) {
     super(props);
     this.navigation = this.props.navigation;
@@ -22,11 +22,17 @@ class ViewReview extends Component {
       likes: '',
       locationName: '',
       locationID: '',
+      imgUri: '',
     };
   }
 
   componentDidMount() {
-    this.loadData();
+    const unsubscribe = this.navigation.addListener('focus', () => {
+      this.getToken();
+      this.loadData();
+      this.getReviewImgUri();
+      console.debug('IMAGE URI: ' + this.state.imgUri);
+    });
   }
 
   async loadData() {
@@ -54,6 +60,52 @@ class ViewReview extends Component {
     } catch (e) {
       console.error('Somethings gone wrong retrieving token (home): ' + e);
     }
+  }
+
+  async getReviewImgUri() {
+    try {
+      const uri = await AsyncStorage.getItem('review_img_uri');
+      console.log('ADD REVIEW IMG URI: ' + uri);
+      if (uri) {
+        this.setState({imgUri: uri});
+        console.log('ADD REVIEW URI SET TO:' + this.state.imgUri);
+      } else {
+        console.error('No uri found');
+      }
+    } catch (e) {
+      console.error('Somethings gone wrong retrieving img uri: ' + e);
+    }
+  }
+
+  async uploadImage() {
+    const data = new FormData();
+    data.append('photo', {
+      uri: this.state.imgUri,
+      type: 'image/jpeg',
+      name: this.reviewID + 'review_pic',
+    });
+    fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+        this.locationID +
+        '/review/' +
+        this.state.reviewID +
+        '/photo',
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+        body: data,
+      },
+    )
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+      })
+      .catch((error) => {
+        console.log('ERROR UPLOADING IMAGE: ' + error);
+      });
   }
 
   async loadReview() {
@@ -157,6 +209,16 @@ class ViewReview extends Component {
       });
   }
 
+  async postUpdates() {
+    await this.updateReview();
+    if (this.state.imgUri) {
+      console.log('Uploading image...');
+      await this.uploadImage();
+    } else {
+      console.log('No image selected/detected, skipping img upload');
+    }
+  }
+
   render() {
     return (
       <View>
@@ -203,6 +265,16 @@ class ViewReview extends Component {
             selectedStar={(rating) => this.setAvgClenlinessRating(rating)}
           />
         </View>
+        <View style={styles.ratingsBackground}>
+          {this.state.imgUri ? (
+            <Text>Got file: {this.state.imgUri}</Text>
+          ) : (
+            <Text onPress={() => this.navigation.navigate('CoffeeCam')}>
+              {' '}
+              + Add a pic? It'll be quick...
+            </Text>
+          )}
+        </View>
         <View style={styles.myReviewBackgrounnd}>
           <Text> Tell us what you thought about the place: </Text>
           <TextInput
@@ -210,7 +282,7 @@ class ViewReview extends Component {
             onChangeText={(text) => this.setState({reviewBody: text})}
           />
         </View>
-        <Button title="Update" onPress={() => this.updateReview()} />
+        <Button title="Update" onPress={() => this.postUpdates()} />
       </View>
     );
   }
@@ -244,4 +316,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewReview;
+export default ViewOwnReview;

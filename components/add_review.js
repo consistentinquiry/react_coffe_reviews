@@ -18,11 +18,15 @@ class ViewShop extends Component {
       avgQualityRating: 0,
       avgClenlinessRating: 0,
       reviewBody: '',
+      reviewID: '',
     };
   }
 
   componentDidMount() {
-    this.getToken();
+    const unsubscribe = this.navigation.addListener('focus', () => {
+      this.getToken();
+      this.getReviewImgUri();
+    });
   }
 
   async getToken() {
@@ -59,7 +63,7 @@ class ViewShop extends Component {
         }),
       },
     )
-      .then((response) => response.status)
+      .then((response) => response.json)
       .then((status) => {
         console.debug('Response.status = ' + status);
         if (status === 201) {
@@ -172,9 +176,6 @@ class ViewShop extends Component {
             starSize={20}
             selectedStar={(rating) => this.setAvgClenlinessRating(rating)}
           />
-        </View>
-        <View style={styles.ratingsBackground}>
-          <Text>Add a pic? It'll be quick...</Text>
         </View>
         <View style={styles.myReviewBackgrounnd}>
           <Text> Tell us what you thought about the place: </Text>

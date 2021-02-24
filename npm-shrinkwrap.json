@@ -17,6 +17,7 @@
         "react": "16.13.1",
         "react-bootstrap": "^1.4.3",
         "react-native": "0.63.4",
+        "react-native-camera": "^3.42.3",
         "react-native-geolocation-service": "^5.2.0",
         "react-native-gesture-handler": "^1.9.0",
         "react-native-ionicons": "^4.6.5",
@@ -10374,6 +10375,14 @@
       "integrity": "sha512-4siaJlpOLeL9fAhX8VU3cnUfcGLe3E2zABDWSKxkF+NiYOd+AnKeYY29WXlV8hXhCFo+Ry7E+alrJ6zjZLTSfg==",
       "dependencies": {
         "prop-types": "^15.5.10"
+      }
+    },
+    "node_modules/react-native-camera": {
+      "version": "3.42.3",
+      "resolved": "https://registry.npmjs.org/react-native-camera/-/react-native-camera-3.42.3.tgz",
+      "integrity": "sha512-/MGDNlcagx/f7HPI0I+xT4N59UA0SE2c/D6BLNtqHzn1YHZj0QFVDbSzMTd3jWKzvHtGfet8rg6A2cZxY+ZvJw==",
+      "dependencies": {
+        "prop-types": "^15.6.2"
       }
     },
     "node_modules/react-native-flipper": {
@@ -23382,6 +23391,14 @@
       "integrity": "sha512-4siaJlpOLeL9fAhX8VU3cnUfcGLe3E2zABDWSKxkF+NiYOd+AnKeYY29WXlV8hXhCFo+Ry7E+alrJ6zjZLTSfg==",
       "requires": {
         "prop-types": "^15.5.10"
+      }
+    },
+    "react-native-camera": {
+      "version": "3.42.3",
+      "resolved": "https://registry.npmjs.org/react-native-camera/-/react-native-camera-3.42.3.tgz",
+      "integrity": "sha512-/MGDNlcagx/f7HPI0I+xT4N59UA0SE2c/D6BLNtqHzn1YHZj0QFVDbSzMTd3jWKzvHtGfet8rg6A2cZxY+ZvJw==",
+      "requires": {
+        "prop-types": "^15.6.2"
       }
     },
     "react-native-flipper": {

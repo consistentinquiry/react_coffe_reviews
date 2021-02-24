@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler'; //must be on line 1
 
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Button} from 'react-native';
+import {PermissionsAndroid, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 
 import {createStackNavigator} from '@react-navigation/stack';
@@ -13,7 +13,8 @@ import CreateUser from './components/create_user';
 import ViewShop from './components/view_shop';
 import MyAccount from './components/my_account';
 import AddReview from './components/add_review';
-import ViewReview from './components/view_review';
+import ViewOwnReview from './components/view_own_review';
+import CoffeeCam from './components/coffee_cam';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,6 +32,24 @@ class App extends Component {
       console.error("[ERROR] Couldn't fetch all async contnents: " + error);
     }
   };
+
+  findCoordinates() {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const location = JSON.stringify(position);
+
+        this.setState({location});
+      },
+      (error) => {
+        Alert.alert('Location error: ' + error.message);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000,
+      },
+    );
+  }
 
   clearAsyncStorage = async () => {
     console.log('[INFO] Clearning storage...');
@@ -58,10 +77,11 @@ class App extends Component {
           <Stack.Screen name="MyAccount" component={MyAccount} />
           <Stack.Screen name="AddReview" component={AddReview} />
           <Stack.Screen
-            name="ViewReview"
-            component={ViewReview}
+            name="ViewOwnReview"
+            component={ViewOwnReview}
             options={{headerShown: true}}
           />
+          <Stack.Screen name="CoffeeCam" component={CoffeeCam} />
         </Stack.Navigator>
       </NavigationContainer>
     );

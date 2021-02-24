@@ -41,6 +41,7 @@ class MyAccount extends Component {
 
   async loadData() {
     await this.retrieveCredentials();
+    await AsyncStorage.removeItem('review_img_uri');
     console.log('THIS TOKEN WILL BE USED: ' + this.state.token);
     this.getUser();
   }
@@ -278,7 +279,7 @@ class MyAccount extends Component {
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() =>
-                    this.navigation.navigate('ViewReview', {
+                    this.navigation.navigate('ViewOwnReview', {
                       id: item.review.review_id,
                     })
                   }>

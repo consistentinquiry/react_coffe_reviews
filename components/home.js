@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import Shops from './shops';
 import Search from './search';
 import MyAccount from './my_account';
+import Map from './map';
+
 
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
@@ -42,12 +44,12 @@ class Home extends Component {
           }}
         />
         <Tab.Screen
-          name="Search"
-          component={Search}
+          name="Map"
+          component={Map}
           options={{
-            tabBarLabel: 'Search',
+            tabBarLabel: 'Map',
             tabBarIcon: ({color, size}) => (
-              <Icon name="search" color={color} size={size} />
+              <Icon name="map" color={color} size={size} />
             ),
           }}
         />
