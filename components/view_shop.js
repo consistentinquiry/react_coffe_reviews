@@ -156,7 +156,7 @@ class ViewShop extends Component {
             {this.state.thisShop.location_town}
           </Text>
           <View style={styles.ratingsBackground}>
-            <Text style={styles.ratingTitle}>Average overall_rating: </Text>
+            <Text style={styles.headingTxt}>Average overall rating: </Text>
             <StarRating
               disabled={false}
               fullStarColor={'gold'}
@@ -165,7 +165,7 @@ class ViewShop extends Component {
               starSize={20}
               selectedStar={(rating) => this.onStarRatingPress(rating)}
             />
-            <Text style={styles.ratingTitle}>Average price rating: </Text>
+            <Text style={styles.headingTxt}>Average price rating: </Text>
             <StarRating
               disabled={false}
               fullStarColor={'gold'}
@@ -174,7 +174,7 @@ class ViewShop extends Component {
               starSize={20}
               selectedStar={(rating) => this.onStarRatingPress(rating)}
             />
-            <Text style={styles.ratingTitle}>Average quality rating: </Text>
+            <Text style={styles.headingTxt}>Average quality rating: </Text>
             <StarRating
               disabled={false}
               fullStarColor={'gold'}
@@ -183,7 +183,7 @@ class ViewShop extends Component {
               starSize={20}
               selectedStar={(rating) => this.onStarRatingPress(rating)}
             />
-            <Text style={styles.ratingTitle}>Average clenliness rating: </Text>
+            <Text style={styles.headingTxt}>Average clenliness rating: </Text>
             <StarRating
               disabled={false}
               fullStarColor={'gold'}
@@ -254,9 +254,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: 'white',
   },
-  ratingTitle: {
-    color: 'black',
-  },
   ratingsBackground: {
     borderWidth: 2,
     borderColor: '#777',
@@ -295,6 +292,9 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
     height: '100%',
+  },
+  headingTxt: {
+    fontSize: 18,
   },
 });
 

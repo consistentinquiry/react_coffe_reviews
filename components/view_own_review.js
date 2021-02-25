@@ -1,7 +1,18 @@
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, StyleSheet, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  Image,
+  TouchableHighlight,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating';
+import {ActivityIndicator} from 'react-native-paper';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 class ViewOwnReview extends Component {
   constructor(props) {
@@ -10,8 +21,10 @@ class ViewOwnReview extends Component {
     this.reviewID = this.props.route.params.id;
     this.state = {
       token: '',
+      isLoading: true,
       thisReview: [],
       reviewID: '',
+      serverImg: '',
       overallRating: 0,
       avgPriceRating: 0,
       avgQualityRating: 0,
@@ -34,9 +47,9 @@ class ViewOwnReview extends Component {
   }
 
   async loadData() {
+    console.log('-> Starting the review loading process...');
     await this.getToken();
     await this.getUser();
-    await this.getImage();
     await this.getReviewImgUri();
   }
 
@@ -80,13 +93,6 @@ class ViewOwnReview extends Component {
       '/review/' +
       this.state.reviewID +
       '/photo';
-    // let uploadData = new FormData();
-    // uploadData.append('submit', 'ok');
-    // uploadData.append('file', {
-    //   type: 'image/jpg',
-    //   uri: this.state.imgUri,
-    //   name: 'img_upload.jpg',
-    // });
     fetch(base_url, {
       method: 'POST',
       headers: {
@@ -95,9 +101,11 @@ class ViewOwnReview extends Component {
       },
       body: this.state.imgUri,
     })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log('JSON: ' + JSON.stringify(json));
+      .then((response) => response.status)
+      .then((status) => {
+        if (status === 200) {
+          console.log('Image posted to review!');
+        }
       })
       .catch((error) => {
         console.error('POST photo failed: ' + error);
@@ -105,7 +113,6 @@ class ViewOwnReview extends Component {
   }
 
   async getImage() {
-    console.log('-> locationID:' + this.state.locationID);
     let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
       this.state.locationID +
@@ -122,9 +129,39 @@ class ViewOwnReview extends Component {
       .then((response) => response.text())
       .then((text) => {
         console.log('RESPONSE IMAGE: ' + JSON.stringify(text));
+        this.setState({serverImg: JSON.stringify(text)});
       })
       .catch((error) => {
         console.error('GET photo failed: ' + error);
+      });
+    this.setState({isLoading: false});
+  }
+
+  async deleteImage() {
+    let base_url =
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+      this.state.locationID +
+      '/review/' +
+      this.reviewID +
+      '/photo';
+    fetch(base_url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'X-Authorization': this.state.token,
+      },
+    })
+      .then((response) => response.status)
+      .then((status) => {
+        if (status === 200) {
+          Alert.alert('Image deleted!');
+        }
+      })
+      .catch((error) => {
+        console.error('DELETE photo failed: ' + error);
+        Alert.alert(
+          'Couldnt delete photo, there was an error :( \n More info: ' + error,
+        );
       });
   }
 
@@ -144,6 +181,7 @@ class ViewOwnReview extends Component {
           locationName: reviews[i].location.location_name,
         });
         this.setState({locationID: reviews[i].location.location_id});
+        this.getImage();
       }
     }
 
@@ -240,6 +278,9 @@ class ViewOwnReview extends Component {
   }
 
   render() {
+    if (this.state.isLoading) {
+      return <ActivityIndicator size={'large'} />;
+    }
     return (
       <View>
         <View>
@@ -295,8 +336,19 @@ class ViewOwnReview extends Component {
             </Text>
           )}
         </View>
+        <View style={styles.ratingsBackground}>
+          <Image source={this.state.serverImg} />
+          <TouchableHighlight onPress={() => this.deleteImage()}>
+            <View>
+              <Icon name={'trash'} size={15} />
+            </View>
+          </TouchableHighlight>
+        </View>
         <View style={styles.myReviewBackgrounnd}>
-          <Text> Tell us what you thought about the place: </Text>
+          <Text style={styles.headingTxt}>
+            {' '}
+            Tell us what you thought about the place:{' '}
+          </Text>
           <TextInput
             defaultValue={this.state.reviewBody}
             onChangeText={(text) => this.setState({reviewBody: text})}
@@ -333,6 +385,9 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
     height: '100%',
+  },
+  headingTxt: {
+    fontSize: 18,
   },
 });
 

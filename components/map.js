@@ -184,7 +184,7 @@ class Map extends Component {
                 }}
                 title={marker.location_name}
                 image={require('../img//coffecup.png')}
-                description={'description'}
+                // description={}
               />
             ))}
           </MapView>

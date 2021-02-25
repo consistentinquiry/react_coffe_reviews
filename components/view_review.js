@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, StyleSheet, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating';
 
@@ -22,7 +30,8 @@ class ViewReview extends Component {
       likes: '',
       locationName: '',
       locationData: [],
-      reviewImageData: [],
+      serverImg: '',
+      isLoading: true,
     };
   }
 
@@ -35,7 +44,6 @@ class ViewReview extends Component {
     console.log('VIEW REVIEW locationID:' + this.locationID);
     await this.getToken();
     await this.getLocation();
-    await this.getPhotos();
   }
 
   async getToken() {
@@ -79,28 +87,29 @@ class ViewReview extends Component {
     }
   }
 
-  async getPhotos() {
-    console.log('Getting photos...');
-    fetch(
+  async getImage() {
+    let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
-        this.locationID +
-        '/review/' +
-        this.reviewID +
-        '/photo',
-      {
-        method: 'GET',
-        headers: {
-          'X-Authorization': this.state.token,
-        },
+      this.locationID +
+      '/review/' +
+      this.reviewID +
+      '/photo';
+    fetch(base_url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'X-Authorization': this.state.token,
       },
-    )
-      .then((response) => response)
-      .then((response) => {
-        console.log('img response: ' + JSON.stringify(response));
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        console.log('RESPONSE IMAGE: ' + JSON.stringify(text));
+        this.setState({serverImg: JSON.stringify(text)});
       })
       .catch((error) => {
-        console.error('VIEW REVIEW getUser() error: ' + error);
+        console.error('GET photo failed: ' + error);
       });
+    this.setState({isLoading: false});
   }
 
   async getLocation() {
@@ -117,6 +126,7 @@ class ViewReview extends Component {
           locationData: json,
         });
         this.loadReview();
+        this.getImage();
       })
       .catch((error) => {
         console.error('VIEW REVIEW getUser() error: ' + error);
@@ -144,13 +154,16 @@ class ViewReview extends Component {
   }
 
   render() {
+    if (this.state.isLoading) {
+      return <ActivityIndicator size={'large'} />;
+    }
     return (
       <View>
         <View>
           <Text style={styles.title}>Review for {this.state.locationName}</Text>
         </View>
         <View style={styles.ratingsBackground}>
-          <Text style={styles.ratingTitle}>Average overall_rating: </Text>
+          <Text style={styles.headingTxt}>Average overall rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -159,7 +172,7 @@ class ViewReview extends Component {
             starSize={20}
             selectedStar={(rating) => this.setOverallRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average price rating: </Text>
+          <Text style={styles.headingTxt}>Average price rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -168,7 +181,7 @@ class ViewReview extends Component {
             starSize={20}
             selectedStar={(rating) => this.setAvgPriceRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average quality rating: </Text>
+          <Text style={styles.headingTxt}>Average quality rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -177,7 +190,7 @@ class ViewReview extends Component {
             starSize={20}
             selectedStar={(rating) => this.setAvgQualityRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average clenliness rating: </Text>
+          <Text style={styles.headingTxt}>Average clenliness rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -206,9 +219,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: 'black',
   },
-  ratingTitle: {
-    color: 'black',
-  },
   ratingsBackground: {
     borderWidth: 2,
     borderColor: '#777',
@@ -227,6 +237,9 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
     height: '100%',
+  },
+  headingTxt: {
+    fontSize: 18,
   },
 });
 

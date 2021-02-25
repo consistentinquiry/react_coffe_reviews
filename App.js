@@ -17,6 +17,7 @@ import CoffeeCam from './components/coffee_cam';
 import ListLocals from './components/map_list_locals';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ViewReview from './components/view_review';
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,11 @@ class App extends Component {
           <Stack.Screen
             name="ViewOwnReview"
             component={ViewOwnReview}
+            options={{headerShown: true}}
+          />
+          <Stack.Screen
+            name="ViewReview"
+            component={ViewReview}
             options={{headerShown: true}}
           />
           <Stack.Screen name="CoffeeCam" component={CoffeeCam} />

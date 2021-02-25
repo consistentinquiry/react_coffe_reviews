@@ -3,13 +3,29 @@ import {Text, View, StyleSheet, Button, Alert} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import StarRating from 'react-native-star-rating';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Filter from 'bad-words';
 
 class ViewShop extends Component {
   constructor(props) {
     super(props);
     this.navigation = this.props.navigation;
     this.id = this.props.route.params.id;
-    console.debug('REVIEWING SHOP: ' + this.id);
+    this.filter = new Filter();
+
+    this.filter.addWords(
+      'Tea',
+      'tea',
+      'Teas',
+      'teas',
+      'Cake',
+      'cake',
+      'Cakes',
+      'cakes',
+      'Pastry',
+      'pastry',
+      'Pastries',
+      'pastries',
+    );
     this.state = {
       token: '',
       thisReview: [],
@@ -62,7 +78,7 @@ class ViewShop extends Component {
         }),
       },
     )
-      .then((response) => response.json)
+      .then((response) => response.status)
       .then((status) => {
         console.debug('Response.status = ' + status);
         if (status === 201) {
@@ -96,42 +112,6 @@ class ViewShop extends Component {
     this.setState({avgClenlinessRating: value});
   }
 
-  submitReview() {
-    console.debug('Profane? ' + this.detectProfanity());
-    if (this.detectProfanity()) {
-      Alert.alert(
-        'You used a naughty term, your review was not posted. Try again but this time without such filth!',
-      );
-    } else {
-      console.log('No filth detected, you may post.');
-      this.postReview();
-    }
-  }
-
-  detectProfanity() {
-    console.debug('REVIEW BODY:' + this.state.reviewBody);
-    const profanity = [
-      'tea',
-      'Tea',
-      'teas',
-      'Teas',
-      'cakes',
-      'cake',
-      'Cake',
-      'Cakes',
-      'Pastry',
-      'Pastries',
-      'pastry',
-      'pastries',
-    ];
-    if (this.state.reviewBody.includes(...profanity)) {
-      return true;
-    } else {
-      console.log('No profanity detected!');
-      return false;
-    }
-  }
-
   render() {
     return (
       <View>
@@ -139,7 +119,7 @@ class ViewShop extends Component {
           <Text style={styles.title}>New review</Text>
         </View>
         <View style={styles.ratingsBackground}>
-          <Text style={styles.ratingTitle}>Average overall_rating: </Text>
+          <Text style={styles.headingTxt}>Average overall_rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -148,7 +128,7 @@ class ViewShop extends Component {
             starSize={20}
             selectedStar={(rating) => this.setOverallRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average price rating: </Text>
+          <Text style={styles.headingTxt}>Average price rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -157,7 +137,7 @@ class ViewShop extends Component {
             starSize={20}
             selectedStar={(rating) => this.setAvgPriceRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average quality rating: </Text>
+          <Text style={styles.headingTxt}>Average quality rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -166,7 +146,7 @@ class ViewShop extends Component {
             starSize={20}
             selectedStar={(rating) => this.setAvgQualityRating(rating)}
           />
-          <Text style={styles.ratingTitle}>Average clenliness rating: </Text>
+          <Text style={styles.headingTxt}>Average clenliness rating: </Text>
           <StarRating
             disabled={false}
             fullStarColor={'gold'}
@@ -180,10 +160,16 @@ class ViewShop extends Component {
           <Text> Tell us what you thought about the place: </Text>
           <TextInput
             placeholder="Any thoughts? Don't hold back..."
-            onChangeText={(text) => this.setState({reviewBody: text})}
+            onChangeText={(text) =>
+              this.setState({reviewBody: this.filter.clean(text)})
+            }
           />
         </View>
-        <Button title="Submit" onPress={() => this.submitReview()} />
+        <Button
+          title="Submit"
+          onPress={() => this.postReview()}
+          color={'orange'}
+        />
       </View>
     );
   }
@@ -191,9 +177,6 @@ class ViewShop extends Component {
 const styles = StyleSheet.create({
   title: {
     fontSize: 40,
-    color: 'black',
-  },
-  ratingTitle: {
     color: 'black',
   },
   ratingsBackground: {
@@ -214,6 +197,9 @@ const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
     height: '100%',
+  },
+  headingTxt: {
+    fontSize: 18,
   },
 });
 
