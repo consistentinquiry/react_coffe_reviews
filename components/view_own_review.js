@@ -28,20 +28,16 @@ class ViewOwnReview extends Component {
 
   componentDidMount() {
     const unsubscribe = this.navigation.addListener('focus', () => {
-      this.getToken();
       this.loadData();
-      this.getReviewImgUri();
       console.debug('IMAGE URI: ' + this.state.imgUri);
     });
   }
 
   async loadData() {
     await this.getToken();
-    console.log('VIEW REVIEW reviewID: ' + this.reviewID);
-    console.log(
-      'VIEW REVIEW route stringification:' + JSON.stringify(this.props.route),
-    );
     await this.getUser();
+    await this.getImage();
+    await this.getReviewImgUri();
   }
 
   async getToken() {
@@ -78,33 +74,57 @@ class ViewOwnReview extends Component {
   }
 
   async uploadImage() {
-    const data = new FormData();
-    data.append('photo', {
-      uri: this.state.imgUri,
-      type: 'image/jpeg',
-      name: this.reviewID + 'review_pic',
-    });
-    fetch(
+    let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
-        this.locationID +
-        '/review/' +
-        this.state.reviewID +
-        '/photo',
-      {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-        body: data,
+      this.state.locationID +
+      '/review/' +
+      this.state.reviewID +
+      '/photo';
+    // let uploadData = new FormData();
+    // uploadData.append('submit', 'ok');
+    // uploadData.append('file', {
+    //   type: 'image/jpg',
+    //   uri: this.state.imgUri,
+    //   name: 'img_upload.jpg',
+    // });
+    fetch(base_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'X-Authorization': this.state.token,
       },
-    )
+      body: this.state.imgUri,
+    })
       .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
+      .then((json) => {
+        console.log('JSON: ' + JSON.stringify(json));
       })
       .catch((error) => {
-        console.log('ERROR UPLOADING IMAGE: ' + error);
+        console.error('POST photo failed: ' + error);
+      });
+  }
+
+  async getImage() {
+    console.log('-> locationID:' + this.state.locationID);
+    let base_url =
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+      this.state.locationID +
+      '/review/' +
+      this.reviewID +
+      '/photo';
+    fetch(base_url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'image/jpeg',
+        'X-Authorization': this.state.token,
+      },
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        console.log('RESPONSE IMAGE: ' + JSON.stringify(text));
+      })
+      .catch((error) => {
+        console.error('GET photo failed: ' + error);
       });
   }
 
@@ -122,8 +142,8 @@ class ViewOwnReview extends Component {
           reviewBody: reviews[i].review.review_body,
           likes: reviews[i].review.likes,
           locationName: reviews[i].location.location_name,
-          locationID: reviews[i].location.location_id,
         });
+        this.setState({locationID: reviews[i].location.location_id});
       }
     }
 

@@ -25,7 +25,6 @@ class ViewShop extends Component {
   componentDidMount() {
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.getToken();
-      this.getReviewImgUri();
     });
   }
 

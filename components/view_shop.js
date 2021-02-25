@@ -18,6 +18,8 @@ class ViewShop extends Component {
   constructor(props) {
     super(props);
     this.id = this.props.route.params.id;
+    this.usrID = this.props.route.params.usrID;
+    console.log('VIEW SHOP usrID: ' + this.usrID);
     this.navigation = this.props.navigation;
     this.state = {
       token: '',
@@ -108,109 +110,140 @@ class ViewShop extends Component {
       });
   }
 
+  dislikeReview(reviewID) {
+    console.debug('ID to be used: ' + reviewID);
+    fetch(
+      'http://10.0.2.2:3333/api/1.0.0/location/' +
+        this.id +
+        '/review/' +
+        reviewID +
+        '/like',
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Authorization': this.state.token.substring(
+            1,
+            this.state.token.length - 1,
+          ), //this gross little fix was needed becuase for some reason double quotes were being added to the token
+        },
+      },
+    )
+      .then((response) => response.status)
+      .then((status) => {
+        console.debug('Response.status = ' + status);
+        if (status === 200) {
+          console.info('Disliked review!');
+          Alert.alert('Disliked review!');
+          this.navigation.navigate('ViewShop', {id: this.id});
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   render() {
     const navigation = this.props.navigation;
     console.debug('ID: ' + this.id);
     return (
       <View>
-        <ScrollView>
-          <ImageBackground
-            style={styles.backgroundImage}
-            source={require('../img/blur_background.jpg')}>
-            <Text style={styles.title}>
-              {this.state.thisShop.location_name}
+        <ImageBackground
+          style={styles.backgroundImage}
+          source={require('../img/blur_background.jpg')}>
+          <Text style={styles.title}>{this.state.thisShop.location_name}</Text>
+          <Text style={styles.location}>
+            {this.state.thisShop.location_town}
+          </Text>
+          <View style={styles.ratingsBackground}>
+            <Text style={styles.ratingTitle}>Average overall_rating: </Text>
+            <StarRating
+              disabled={false}
+              fullStarColor={'gold'}
+              maxStars={5}
+              rating={this.state.thisShop.avg_overall_rating}
+              starSize={20}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+            />
+            <Text style={styles.ratingTitle}>Average price rating: </Text>
+            <StarRating
+              disabled={false}
+              fullStarColor={'gold'}
+              maxStars={5}
+              rating={this.state.thisShop.avg_price_rating}
+              starSize={20}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+            />
+            <Text style={styles.ratingTitle}>Average quality rating: </Text>
+            <StarRating
+              disabled={false}
+              fullStarColor={'gold'}
+              maxStars={5}
+              rating={this.state.thisShop.avg_quality_rating}
+              starSize={20}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+            />
+            <Text style={styles.ratingTitle}>Average clenliness rating: </Text>
+            <StarRating
+              disabled={false}
+              fullStarColor={'gold'}
+              maxStars={5}
+              rating={this.state.thisShop.avg_clenliness_rating}
+              starSize={20}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+            />
+          </View>
+          <View style={styles.myReviewBackgrounnd}>
+            <Text
+              onPress={() => navigation.navigate('AddReview', {id: this.id})}>
+              What did you think of {this.state.thisShop.location_name}? Write
+              your review here.
             </Text>
-            <Text style={styles.location}>
-              {this.state.thisShop.location_town}
+          </View>
+          <View style={styles.reviewsBackground}>
+            <Text style={styles.reviewsTitle}>
+              Community reviews for {this.state.thisShop.location_name}:{' '}
             </Text>
-            <View style={styles.ratingsBackground}>
-              <Text style={styles.ratingTitle}>Average overall_rating: </Text>
-              <StarRating
-                disabled={false}
-                fullStarColor={'gold'}
-                maxStars={5}
-                rating={this.state.thisShop.avg_overall_rating}
-                starSize={20}
-                selectedStar={(rating) => this.onStarRatingPress(rating)}
-              />
-              <Text style={styles.ratingTitle}>Average price rating: </Text>
-              <StarRating
-                disabled={false}
-                fullStarColor={'gold'}
-                maxStars={5}
-                rating={this.state.thisShop.avg_price_rating}
-                starSize={20}
-                selectedStar={(rating) => this.onStarRatingPress(rating)}
-              />
-              <Text style={styles.ratingTitle}>Average quality rating: </Text>
-              <StarRating
-                disabled={false}
-                fullStarColor={'gold'}
-                maxStars={5}
-                rating={this.state.thisShop.avg_quality_rating}
-                starSize={20}
-                selectedStar={(rating) => this.onStarRatingPress(rating)}
-              />
-              <Text style={styles.ratingTitle}>
-                Average clenliness rating:{' '}
-              </Text>
-              <StarRating
-                disabled={false}
-                fullStarColor={'gold'}
-                maxStars={5}
-                rating={this.state.thisShop.avg_clenliness_rating}
-                starSize={20}
-                selectedStar={(rating) => this.onStarRatingPress(rating)}
-              />
-            </View>
-            <View style={styles.myReviewBackgrounnd}>
-              <Text
-                onPress={() => navigation.navigate('AddReview', {id: this.id})}>
-                What did you think of {this.state.thisShop.location_name}? Write
-                your review here.
-              </Text>
-            </View>
-            <View style={styles.reviewsBackground}>
-              <Text style={styles.reviewsTitle}>
-                Community reviews for {this.state.thisShop.location_name}:{' '}
-              </Text>
-              <FlatList
-                data={this.state.thisShop.location_reviews}
-                style={styles.container}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate('ViewReview', {
-                        locationID: this.id,
-                        reviewID: item.review_id,
-                      })
-                    }>
-                    <View style={styles.reviewBackground}>
-                      <StarRating
-                        fullStarColor={'gold'}
-                        maxStars={5}
-                        rating={item.overall_rating}
-                      />
-                      {console.log('VIEW SHOP item.location_id: ' + this.id)}
-                      {console.log(
-                        'VIEW SHOP item.review_id: ' + item.review_id,
-                      )}
-                      <Text>{item.review_body}</Text>
-                      <Text>Likes: {item.likes} </Text>
-                      <TouchableHighlight
-                        onPress={() => this.likeReview(item.review_id)}>
-                        <View>
-                          <Icon name="thumbs-up" size={30} color="#900" />
-                        </View>
-                      </TouchableHighlight>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          </ImageBackground>
-        </ScrollView>
+            <FlatList
+              data={this.state.thisShop.location_reviews}
+              style={styles.container}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ViewReview', {
+                      locationID: this.id,
+                      reviewID: item.review_id,
+                    })
+                  }>
+                  <View style={styles.reviewBackground}>
+                    <StarRating
+                      fullStarColor={'gold'}
+                      maxStars={5}
+                      rating={item.overall_rating}
+                    />
+                    {console.log('VIEW SHOP item.location_id: ' + this.id)}
+                    {console.log('VIEW SHOP item.review_id: ' + item.review_id)}
+                    <Text>{item.review_body}</Text>
+                    <Text>Likes: {item.likes} </Text>
+                    <TouchableHighlight
+                      onPress={() => this.likeReview(item.review_id)}>
+                      <View>
+                        <Icon name="thumbs-up" size={30} color="green" />
+                      </View>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                      onPress={() => this.dislikeReview(item.review_id)}>
+                      <View>
+                        <Icon name="thumbs-down" size={30} color="#900" />
+                      </View>
+                    </TouchableHighlight>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </ImageBackground>
       </View>
     );
   }

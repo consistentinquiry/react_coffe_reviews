@@ -36,12 +36,12 @@ class MyAccount extends Component {
   componentDidMount() {
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.loadData();
+      AsyncStorage.removeItem('review_img_uri');
     });
   }
 
   async loadData() {
     await this.retrieveCredentials();
-    await AsyncStorage.removeItem('review_img_uri');
     console.log('THIS TOKEN WILL BE USED: ' + this.state.token);
     this.getUser();
   }
@@ -209,21 +209,21 @@ class MyAccount extends Component {
         <View>
           <View style={styles.card}>
             <View style={styles.card}>
-              <Text> First name: </Text>
+              <Text style={styles.headingTxt}> First name: </Text>
               <TextInput
                 defaultValue={this.state.user_data.first_name}
                 onChangeText={(first_name) => this.setState({first_name})}
               />
             </View>
             <View style={styles.card}>
-              <Text> Second name: </Text>
+              <Text style={styles.headingTxt}> Second name: </Text>
               <TextInput
                 defaultValue={this.state.user_data.last_name}
                 onChangeText={(last_name) => this.setState({last_name})}
               />
             </View>
             <View style={styles.card}>
-              <Text> Email: </Text>
+              <Text style={styles.headingTxt}> Email: </Text>
               <TextInput
                 defaultValue={this.state.user_data.email}
                 onChangeText={(email) => this.setState({email})}
@@ -236,7 +236,7 @@ class MyAccount extends Component {
             />
           </View>
           <View style={styles.card}>
-            <Text>Your favourite locations: </Text>
+            <Text style={styles.headingTxt}>Your favourite locations: </Text>
             <FlatList
               data={this.state.user_data.favourite_locations}
               style={styles.container}
@@ -271,7 +271,7 @@ class MyAccount extends Component {
             />
           </View>
           <View style={styles.card}>
-            <Text>Your reviews: </Text>
+            <Text style={styles.headingTxt}>Your reviews: </Text>
             <FlatList
               data={this.state.user_data.reviews}
               style={styles.container}
@@ -331,6 +331,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   cardTitle: {
+    fontSize: 18,
+  },
+  headingTxt: {
     fontSize: 18,
   },
   backgroundImage: {

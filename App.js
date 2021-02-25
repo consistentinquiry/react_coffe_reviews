@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler'; //must be on line 1
 
 import React, {Component} from 'react';
-import {PermissionsAndroid, Alert} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 
 import {createStackNavigator} from '@react-navigation/stack';
@@ -15,6 +14,7 @@ import MyAccount from './components/my_account';
 import AddReview from './components/add_review';
 import ViewOwnReview from './components/view_own_review';
 import CoffeeCam from './components/coffee_cam';
+import ListLocals from './components/map_list_locals';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -32,24 +32,6 @@ class App extends Component {
       console.error("[ERROR] Couldn't fetch all async contnents: " + error);
     }
   };
-
-  findCoordinates() {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const location = JSON.stringify(position);
-
-        this.setState({location});
-      },
-      (error) => {
-        Alert.alert('Location error: ' + error.message);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000,
-      },
-    );
-  }
 
   clearAsyncStorage = async () => {
     console.log('[INFO] Clearning storage...');
@@ -82,6 +64,11 @@ class App extends Component {
             options={{headerShown: true}}
           />
           <Stack.Screen name="CoffeeCam" component={CoffeeCam} />
+          <Stack.Screen
+            name="ListLocals"
+            component={ListLocals}
+            options={{headerShown: true}}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     );

@@ -5,7 +5,6 @@ import Search from './search';
 import MyAccount from './my_account';
 import Map from './map';
 
-
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';

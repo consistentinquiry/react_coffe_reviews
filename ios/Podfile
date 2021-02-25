@@ -12,6 +12,8 @@ target 'coffee_app' do
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'coffee_appTests' do
     inherit! :complete
     # Pods for testing
