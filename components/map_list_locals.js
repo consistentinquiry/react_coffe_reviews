@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Geolocation from 'react-native-geolocation-service';
 import {getDistance} from 'geolib';
 import {
   View,
@@ -7,11 +6,10 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  TouchableHighlight,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ActivityIndicator} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import StarRating from 'react-native-star-rating';
 
 class ListLocals extends Component {
@@ -30,6 +28,7 @@ class ListLocals extends Component {
   }
 
   componentDidMount() {
+    //call the async data grabbing functions
     this.loadData();
   }
 
@@ -39,6 +38,7 @@ class ListLocals extends Component {
   }
 
   async retrieveCredentials() {
+    //grab the token from storage
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
@@ -47,6 +47,9 @@ class ListLocals extends Component {
         console.error('No token');
       }
     } catch (e) {
+      Alert.alert(
+        'Your token couldnt be retrieved from storage, you wont be able to contact the server.',
+      );
       console.error('Somethings gone wrong retrieving token: ' + e);
     }
   }
@@ -58,7 +61,7 @@ class ListLocals extends Component {
       headers: {
         'X-Authorization': this.state.token.substring(
           1,
-          this.state.token.length - 1,
+          this.state.token.length - 1, //this fix was sometimes needed, for some reason it decided it didnt like "" arond the token
         ),
       },
     })
@@ -73,13 +76,16 @@ class ListLocals extends Component {
       .catch((error) => {
         console.error('Oh no: ' + error);
         console.debug("Here's the token: " + this.state.token);
+        Alert.alert('Failed to get shop data from server :(');
       });
   }
 
   render() {
+    //conditional rendering for loading...
     if (this.state.isLoading) {
       return <ActivityIndicator size="large" />;
     }
+    //not loading...
     console.log(
       'LOCALS locationData: ' + JSON.stringify(this.state.locationData),
     );

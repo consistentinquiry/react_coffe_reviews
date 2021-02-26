@@ -28,6 +28,7 @@ class ViewShop extends Component {
   }
 
   componentDidMount() {
+    //loading function wrapped in event listener that reloads when refocused
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.getToken();
       this.getShop();
@@ -35,6 +36,7 @@ class ViewShop extends Component {
   }
 
   async getToken() {
+    //asyncronously get token from storage along with locaiton
     try {
       let stored = await AsyncStorage.getItem('token');
       console.info('Got this token from storage: ' + stored);
@@ -45,10 +47,12 @@ class ViewShop extends Component {
       }
     } catch (e) {
       console.error('Somethings gone wrong retrieving token (home): ' + e);
+      Alert.alert('Failed to get token from storage');
     }
   }
 
   getShop() {
+    //GET a specific shop and store it in state
     console.info('Fetching a single shop...');
     fetch('http://10.0.2.2:3333/api/1.0.0/location/' + this.id, {
       method: 'GET',
@@ -68,6 +72,7 @@ class ViewShop extends Component {
       })
       .catch((error) => {
         console.error("Something's gone wrong (viewShop): " + error);
+        Alert.alert('Therer was an error getting the specified shop');
       });
   }
 
@@ -78,6 +83,7 @@ class ViewShop extends Component {
   addReview(id) {}
 
   likeReview(reviewID) {
+    //POST which review is to be liked to API
     console.debug('ID to be used: ' + reviewID);
     fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' +
@@ -107,10 +113,12 @@ class ViewShop extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert('Failed to like review');
       });
   }
 
   dislikeReview(reviewID) {
+    //DELETE a like on a review
     console.debug('ID to be used: ' + reviewID);
     fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' +
@@ -140,6 +148,7 @@ class ViewShop extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert('Failed to un-like review:\n' + error);
       });
   }
 

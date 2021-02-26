@@ -22,28 +22,28 @@ class Shops extends Component {
       token: '',
       userID: '',
       favLocations: [],
-      isLoading: true,
+      isLoading: false,
       locationData: [],
       userData: [],
     };
   }
 
   componentDidMount() {
+    //loading function wrapped in event listener that reloads when refocused
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.loadData();
     });
   }
 
   async loadData() {
+    //async loading function for required data
     await this.retrieveCredentials();
     await this.getShops();
     await this.getUser();
-    // console.log('USERDATA:' + JSON.stringify(this.state.userData));
-    // console.log('USERDATA + FAVLOCATION' + JSON.stringify(this.state.userData.favourite_locations));
-    // await this.getFavLocations();
   }
 
   async retrieveCredentials() {
+    //grab the token and the ID from Async storage
     try {
       const token = await AsyncStorage.getItem('token');
       const id = await AsyncStorage.getItem('id');
@@ -58,13 +58,16 @@ class Shops extends Component {
         this.setState({userID: id});
       } else {
         console.error('No token & id found');
+        Alert.alert('No token found! You wont be able to contact the server');
       }
     } catch (e) {
       console.error('Somethings gone wrong retrieving token: ' + e);
+      Alert.alert('Somethings gone wrong retrieving token: ' + e);
     }
   }
 
   async getShops() {
+    //Get all shops from API
     console.log('Fetching shops...');
     fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
       method: 'GET',
@@ -86,6 +89,7 @@ class Shops extends Component {
       .catch((error) => {
         console.error('Oh no: ' + error);
         console.debug("Here's the token: " + this.state.token);
+        Alert.alert('Failed to get shop data :(');
       });
   }
 
@@ -127,6 +131,7 @@ class Shops extends Component {
     for (i = 0; i < this.state.favLocations.length; i++) {
       console.debug('FAV LOCATION ' + [i] + ' = ' + this.state.favLocations[i]);
     }
+    this.setState({isLoading: false});
   }
 
   onPressLike(reviewID) {
@@ -154,64 +159,59 @@ class Shops extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert('Like failed :(');
       });
   }
 
   render() {
-    console.log('(shops.render()) token: ' + this.state.token);
-    if (this.state.isLoading !== true) {
-      return (
-        <View>
-          <ImageBackground
-            style={styles.backgroundImage}
-            source={require('../img/coffee.jpg')}>
-            <FlatList
-              data={this.state.locationData}
-              style={styles.container}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    this.navigation.navigate('ViewShop', {id: item.location_id})
-                  }>
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>{item.location_name}</Text>
-                    <StarRating
-                      fullStarColor={'gold'}
-                      maxStars={5}
-                      starSize={15}
-                      rating={item.avg_overall_rating}
-                    />
-                    <Text>{item.location_town} </Text>
-                    <TouchableHighlight
-                      onPress={() =>
-                        this.onPressLike({
-                          id: item.location_id,
-                          usrID: this.state.userID,
-                        })
-                      }>
-                      <View>
-                        {this.state.favLocations.includes(item.location_id) ? (
-                          <Icon name={'heart'} size={30} color={'#900'} />
-                        ) : (
-                          <Icon name={'heart'} size={30} color={'black'} />
-                        )}
-                      </View>
-                    </TouchableHighlight>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </ImageBackground>
-        </View>
-      );
-    } else {
-      return (
-        <View>
-          <ActivityIndicator size="large" />
-        </View>
-      );
+    if (this.state.isLoading) {
+      return <ActivityIndicator size="large" />;
     }
+    return (
+      <View>
+        <ImageBackground
+          style={styles.backgroundImage}
+          source={require('../img/coffee.jpg')}>
+          <FlatList
+            data={this.state.locationData}
+            style={styles.container}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() =>
+                  this.navigation.navigate('ViewShop', {id: item.location_id})
+                }>
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.location_name}</Text>
+                  <StarRating
+                    fullStarColor={'gold'}
+                    maxStars={5}
+                    starSize={15}
+                    rating={item.avg_overall_rating}
+                  />
+                  <Text>{item.location_town} </Text>
+                  <TouchableHighlight
+                    onPress={() =>
+                      this.onPressLike({
+                        id: item.location_id,
+                        usrID: this.state.userID,
+                      })
+                    }>
+                    <View>
+                      {this.state.favLocations.includes(item.location_id) ? (
+                        <Icon name={'heart'} size={30} color={'#900'} />
+                      ) : (
+                        <Icon name={'heart'} size={30} color={'black'} />
+                      )}
+                    </View>
+                  </TouchableHighlight>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </ImageBackground>
+      </View>
+    );
   }
 }
 

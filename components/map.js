@@ -8,12 +8,10 @@ import {
   PermissionsAndroid,
   StyleSheet,
   Image,
-  overlay,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ActivityIndicator} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 class Map extends Component {
   constructor(props) {
@@ -32,6 +30,7 @@ class Map extends Component {
   }
 
   componentDidMount() {
+    //event listener calls the loading functions whenever the component comes back into focus
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.loadData();
     });
@@ -44,6 +43,7 @@ class Map extends Component {
   }
 
   async retrieveCredentials() {
+    //grab the token AND ID from storage
     try {
       const token = await AsyncStorage.getItem('token');
       const id = await AsyncStorage.getItem('id');
@@ -58,6 +58,9 @@ class Map extends Component {
         this.setState({userID: id});
       } else {
         console.error('No token & id found');
+        Alert.alert(
+          'Either your token or ID failed to show up from storage, you likely will not be able to contact the server :(',
+        );
       }
     } catch (e) {
       console.error('Somethings gone wrong retrieving token: ' + e);
@@ -65,6 +68,7 @@ class Map extends Component {
   }
 
   async getShops() {
+    //GET the shops from the server
     console.log('Fetching shops...');
     fetch('http://10.0.2.2:3333/api/1.0.0/find/', {
       method: 'GET',
@@ -85,10 +89,12 @@ class Map extends Component {
       .catch((error) => {
         console.error('Oh no: ' + error);
         console.debug("Here's the token: " + this.state.token);
+        Alert.alert('Couldnt get shops from the server :(');
       });
   }
 
   findCoordinates = () => {
+    //If user permitted location, use the Geolocation library to get the current position and set it in state, call  locaiton permission function if nt granted
     if (!this.state.locationPermission) {
       this.state.locationPermission = this.requestLocationPermission();
     }
@@ -118,6 +124,7 @@ class Map extends Component {
   };
 
   async requestLocationPermission() {
+    //request the users permsission to access their accurate locaiton
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -134,14 +141,19 @@ class Map extends Component {
         return true;
       } else {
         console.log('Location permission denied');
+        Alert.alert(
+          'You denied location, you can always change your mind later!',
+        );
         return false;
       }
     } catch (err) {
+      Alert.alert('This is odd:\n' + err);
       console.warn(err);
     }
   }
 
   handleOnPress() {
+    //onPress handler for when the user presses the listLocals button on the map, passing the current location in props
     this.navigation.navigate('ListLocals', {
       lat: this.state.myLat,
       long: this.state.myLong,
@@ -149,9 +161,11 @@ class Map extends Component {
   }
 
   render() {
+    //conditional rendering if loading...
     if (this.state.isLoading) {
       return <ActivityIndicator size={'large'} />;
     } else {
+      //loaded...
       return (
         <View style={styles.container}>
           {console.log(
@@ -189,7 +203,7 @@ class Map extends Component {
             ))}
           </MapView>
           <View
-            // eslint-disable-next-line react-native/no-inline-styles
+            //custom button for listLocals
             style={styles.closebyView}>
             <TouchableOpacity
               onPress={() => this.handleOnPress()}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {RNCamera} from 'react-native-camera';
@@ -32,10 +32,12 @@ class CoffeeCam extends Component {
   }
 
   takePicture = async () => {
+    //Async task to take a picture and save the item in Async storage
     if (this.camera) {
       const options = {quality: 0.5, base64: true};
       const data = await this.camera.takePictureAsync(options);
       await AsyncStorage.setItem('review_img_uri', JSON.stringify(data.uri));
+      Alert.alert('Snap!');
       console.log('uri:' + data.uri);
     }
   };

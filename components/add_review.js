@@ -12,6 +12,7 @@ class ViewShop extends Component {
     this.id = this.props.route.params.id;
     this.filter = new Filter();
 
+    //add words to the naughty list
     this.filter.addWords(
       'Tea',
       'tea',
@@ -45,6 +46,7 @@ class ViewShop extends Component {
   }
 
   async getToken() {
+    //get token from Async storage
     try {
       const stored = await AsyncStorage.getItem('token');
       if (stored) {
@@ -61,6 +63,7 @@ class ViewShop extends Component {
   }
 
   async postReview() {
+    //POST to API with the id passed in to the component via props subsequently (see constructor), if fail then alert the user
     return fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' + this.id + '/review/',
       {
@@ -96,6 +99,7 @@ class ViewShop extends Component {
     console.debug('Token: ' + this.state.token);
   }
 
+  //Star value control functions 
   setOverallRating(value) {
     this.setState({overallRating: value});
   }
@@ -161,6 +165,7 @@ class ViewShop extends Component {
           <TextInput
             placeholder="Any thoughts? Don't hold back..."
             onChangeText={(text) =>
+              //Pass the text to the filter to first remove profanity before setting state
               this.setState({reviewBody: this.filter.clean(text)})
             }
           />

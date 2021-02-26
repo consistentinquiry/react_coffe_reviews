@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 
 import Shops from './shops';
-import Search from './search';
 import MyAccount from './my_account';
 import Map from './map';
 
@@ -15,16 +14,12 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      authenticated: false,
       token: '',
     };
   }
 
-  componentDidMount() {
-    console.info('Loading...');
-  }
-
   render() {
+    //the second nav for to navigate the app's core functionality, tabs are pretty so i went with that
     return (
       <Tab.Navigator
         name="homeNav"

@@ -36,10 +36,12 @@ class ViewReview extends Component {
   }
 
   componentDidMount() {
+    //loading function wrapped in event listener that reloads when refocused
     this.loadData();
   }
 
   async loadData() {
+    //asyncronously get token from storage along with locaiton
     console.log('VIEW REVIEW reviewID:' + this.reviewID);
     console.log('VIEW REVIEW locationID:' + this.locationID);
     await this.getToken();
@@ -47,6 +49,7 @@ class ViewReview extends Component {
   }
 
   async getToken() {
+    //grab token from storage and store it in state
     try {
       const stored = await AsyncStorage.getItem('token');
       const id = await AsyncStorage.getItem('id');
@@ -65,6 +68,9 @@ class ViewReview extends Component {
   }
 
   async loadReview() {
+    ////Extract the singular review relevent to the ID supplied by the previous component
+    //note: i may have over complicated this a tad, i have a feeling that there's an easier
+    //way to do this but hey ho
     var reviews = this.state.locationData.location_reviews;
     console.log('reviews: ' + JSON.stringify(reviews));
     console.log('reviews len: ' + reviews.length);
@@ -88,6 +94,7 @@ class ViewReview extends Component {
   }
 
   async getImage() {
+    //GET the image from the server, this may be incorrectly implemented
     let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
       this.locationID +
@@ -113,6 +120,7 @@ class ViewReview extends Component {
   }
 
   async getLocation() {
+    //GET a specficic location and store it in state
     fetch('http://10.0.2.2:3333/api/1.0.0/location/' + this.locationID, {
       method: 'GET',
       headers: {
@@ -129,7 +137,7 @@ class ViewReview extends Component {
         this.getImage();
       })
       .catch((error) => {
-        console.error('VIEW REVIEW getUser() error: ' + error);
+        console.error('VIEW REVIEW getLocation() error: ' + error);
       });
   }
 
@@ -137,6 +145,7 @@ class ViewReview extends Component {
     console.debug('Token: ' + this.state.token);
   }
 
+  //star control functions
   setOverallRating(value) {
     this.setState({overallRating: value});
   }

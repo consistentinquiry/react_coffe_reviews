@@ -40,13 +40,14 @@ class ViewOwnReview extends Component {
   }
 
   componentDidMount() {
+    //loading function wrapped in event listener that reloads when refocused
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.loadData();
-      console.debug('IMAGE URI: ' + this.state.imgUri);
     });
   }
 
   async loadData() {
+    //asyncronously get token from storage, grab user data from API and then get the URI of the image taken with the camera
     console.log('-> Starting the review loading process...');
     await this.getToken();
     await this.getUser();
@@ -54,6 +55,7 @@ class ViewOwnReview extends Component {
   }
 
   async getToken() {
+    //get the stored token and ID and place it in state
     try {
       const stored = await AsyncStorage.getItem('token');
       const id = await AsyncStorage.getItem('id');
@@ -67,11 +69,13 @@ class ViewOwnReview extends Component {
         );
       }
     } catch (e) {
+      Alert.alert('Falied to get token, you wont be able to make requests...');
       console.error('Somethings gone wrong retrieving token (home): ' + e);
     }
   }
 
   async getReviewImgUri() {
+    //get the URI of the image taken with the camera and store it in state
     try {
       const uri = await AsyncStorage.getItem('review_img_uri');
       console.log('ADD REVIEW IMG URI: ' + uri);
@@ -82,11 +86,13 @@ class ViewOwnReview extends Component {
         console.error('No uri found');
       }
     } catch (e) {
+      Alert.alert('No photo was detected, take one?');
       console.error('Somethings gone wrong retrieving img uri: ' + e);
     }
   }
 
   async uploadImage() {
+    //POST the image using the URI in state, this may be implemented incorrectly...
     let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
       this.state.locationID +
@@ -108,11 +114,13 @@ class ViewOwnReview extends Component {
         }
       })
       .catch((error) => {
+        Alert.alert('Photo failed to post :(');
         console.error('POST photo failed: ' + error);
       });
   }
 
   async getImage() {
+    //GET request to API for image, again this could be incorrectly implemented as nothing is displayed
     let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
       this.state.locationID +
@@ -133,11 +141,13 @@ class ViewOwnReview extends Component {
       })
       .catch((error) => {
         console.error('GET photo failed: ' + error);
+        Alert.alert('Could not get the accompanying photo :(');
       });
     this.setState({isLoading: false});
   }
 
   async deleteImage() {
+    //DELETE a photo from a review, im pretty sure this is correclty implemented but due
     let base_url =
       'http://10.0.2.2:3333/api/1.0.0/location/' +
       this.state.locationID +
@@ -166,6 +176,9 @@ class ViewOwnReview extends Component {
   }
 
   async loadReview() {
+    //Extract the singular review relevent to the ID supplied by the previous component
+    //note: i may have over complicated this a tad, i have a feeling that there's an easier
+    //way to do this but hey ho
     var reviews = this.state.user_data.reviews;
     var i;
     for (i = 0; i <= reviews.length; i++) {
@@ -184,12 +197,10 @@ class ViewOwnReview extends Component {
         this.getImage();
       }
     }
-
-    // thisReview = reviews.find((item) => item.name === this.reviewID);
-    // console.log('VIEW REVIEW, THIS REVIEW: ' + thisReview);
   }
 
   async getUser() {
+    //GET the user details and by extension all the reviews and store in state for later refinement
     console.log('Fetching user: ' + this.state.userID);
     fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
       method: 'GET',
@@ -206,6 +217,7 @@ class ViewOwnReview extends Component {
         this.loadReview();
       })
       .catch((error) => {
+        Alert.alert('Could not get user data :( ');
         console.error('VIEW REVIEW getUser() error: ' + error);
       });
   }
@@ -214,6 +226,7 @@ class ViewOwnReview extends Component {
     console.debug('Token: ' + this.state.token);
   }
 
+  //The subsequent functions are called to modify the number of stars stored in state
   setOverallRating(value) {
     this.setState({overallRating: value});
   }
@@ -231,6 +244,7 @@ class ViewOwnReview extends Component {
   }
 
   updateReview() {
+    //PATCH for updating the contents of a review, grab the location ID and review ID from state and plop them into the URL 
     console.log('Updating review...');
     return fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' +
@@ -268,6 +282,7 @@ class ViewOwnReview extends Component {
   }
 
   async postUpdates() {
+    //
     await this.updateReview();
     if (this.state.imgUri) {
       console.log('Uploading image...');
@@ -278,9 +293,11 @@ class ViewOwnReview extends Component {
   }
 
   render() {
+    //conditional rendering: loading...
     if (this.state.isLoading) {
       return <ActivityIndicator size={'large'} />;
     }
+    //conditional rendering: not loading...
     return (
       <View>
         <View>
@@ -354,7 +371,11 @@ class ViewOwnReview extends Component {
             onChangeText={(text) => this.setState({reviewBody: text})}
           />
         </View>
-        <Button title="Update" onPress={() => this.postUpdates()} />
+        <Button
+          title="Update"
+          onPress={() => this.postUpdates()}
+          color={'orange'}
+        />
       </View>
     );
   }

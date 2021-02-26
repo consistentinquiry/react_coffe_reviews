@@ -34,6 +34,7 @@ class MyAccount extends Component {
   }
 
   componentDidMount() {
+    //loading function wrapped in focusing event listener
     const unsubscribe = this.navigation.addListener('focus', () => {
       this.loadData();
       AsyncStorage.removeItem('review_img_uri');
@@ -41,12 +42,14 @@ class MyAccount extends Component {
   }
 
   async loadData() {
+    //async loading function for required data
     await this.retrieveCredentials();
     console.log('THIS TOKEN WILL BE USED: ' + this.state.token);
     this.getUser();
   }
 
   async retrieveCredentials() {
+    //grab the token and the ID from Async storage
     try {
       const token = await AsyncStorage.getItem('token');
       const id = await AsyncStorage.getItem('id');
@@ -55,20 +58,25 @@ class MyAccount extends Component {
         this.setState({userID: id});
       } else {
         console.error('No token & id found');
+        Alert.alert('No token found, you wont be able to contact the server');
       }
     } catch (e) {
       console.error('Somethings gone wrong retrieving token: ' + e);
+      Alert.alert(
+        'There was an error getting your token, you wont be able to contact the server :(',
+      );
     }
   }
 
   getUser() {
+    //GET the user details from the server
     console.log('Fetching user: ' + this.state.userID);
     fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
       method: 'GET',
       headers: {
         'X-Authorization': this.state.token.substring(
           1,
-          this.state.token.length - 1,
+          this.state.token.length - 1, //again it kept complaining about the token
         ),
       },
     })
@@ -84,10 +92,12 @@ class MyAccount extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert('Couldnt grab user details from server :( \n' + error);
       });
   }
 
   printUserDataState() {
+    //debug function
     console.log(
       'user data state: ' +
         this.state.first_name +
@@ -99,6 +109,7 @@ class MyAccount extends Component {
   }
 
   updateUser() {
+    //PATCH the user details
     console.log('Updating user...');
     return fetch('http://10.0.2.2:3333/api/1.0.0/user/' + this.state.userID, {
       method: 'PATCH',
@@ -106,7 +117,7 @@ class MyAccount extends Component {
         'Content-Type': 'application/json',
         'X-Authorization': this.state.token.substring(
           1,
-          this.state.token.length - 1,
+          this.state.token.length - 1, //fix was needed again...
         ),
       },
       body: JSON.stringify({
@@ -131,6 +142,7 @@ class MyAccount extends Component {
   }
 
   onPressRemoveFavourite(shopID) {
+    //DELETE that's called when the user wants to remove a favourite shop, using the provided shopID
     console.debug('ID to be unfavourited: ' + shopID);
     fetch(
       'http://10.0.2.2:3333/api/1.0.0/location/' + shopID.id + '/favourite',
@@ -156,10 +168,15 @@ class MyAccount extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert(
+          'Something went wrong and we couldnt delete that from your favourites:\n' +
+            error,
+        );
       });
   }
 
   onPressDeleteReview(IDs) {
+    //DELETE review from the users reviews, using the IDs passed in to the function
     const sID = IDs.shopID;
     const rID = IDs.reviewID;
     const url =
@@ -186,6 +203,7 @@ class MyAccount extends Component {
       })
       .catch((error) => {
         console.error(error);
+        Alert.alert('Failed to get delete review:\n' + error);
       });
   }
 
@@ -249,7 +267,6 @@ class MyAccount extends Component {
                   }>
                   <View style={styles.card}>
                     <Text style={styles.cardTitle}>{item.location_name}</Text>
-                    {/* <Text>{item.avg_overall_rating}</Text> */}
                     <StarRating
                       fullStarColor={'gold'}
                       maxStars={5}
