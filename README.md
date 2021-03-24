@@ -4,8 +4,8 @@ https://github.com/ash-williams/coffida_server
 
 
 key: 
-\✓ = fully implemented and working 
-\~ = partially implemented (see explaination below ->)    
+<\br>✓ = fully implemented and working 
+<\br>~ = partially implemented (see explaination below ->)    
 
 \Endpoints:
 \POST /user - ✓
