@@ -3,16 +3,16 @@ A repo for a front end web application, built using the React Native framework. 
 https://github.com/ash-williams/coffida_server
 
 
-key: 
-✓ = fully implemented and working 
-~ = partially implemented    
+key: <br />
+✓ = fully implemented and working <br />
+~ = partially implemented    <br />
 
-Endpoints:
-POST /user - ✓
-POST /user/login - ✓
-POST /user/logout - ✓
-GET /user/{user_id} - ✓
-PATCH /user/{user_id} - ✓
+Endpoints:<br />
+POST /user - ✓<br />
+POST /user/login - ✓<br />
+POST /user/logout - ✓<br />
+GET /user/{user_id} - ✓<br />
+PATCH /user/{user_id} - ✓<br />
 
 POST /location/{location_id}/review - ✓
 PATCH /location/{location_id}/review/{rev_id} - ✓
