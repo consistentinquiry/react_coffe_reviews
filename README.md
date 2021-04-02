@@ -14,19 +14,19 @@ POST /user/logout - ✓<br />
 GET /user/{user_id} - ✓<br />
 PATCH /user/{user_id} - ✓<br />
 
-POST /location/{location_id}/review - ✓
-PATCH /location/{location_id}/review/{rev_id} - ✓
-DELETE /location/{location_id}/review/{rev_id} - ✓
-GET /location/{loc_id}/review/{rev_id}/photo - ~ 
-POST /location/{location_id}/review/{rev_id}/photo - ~
-DELETE /location/{loc_id}/review/{rev_id}/photo - ✓
-POST /location/{loc_id}/review/{rev_id}/like - ✓
-DELETE /location/{loc_id}/review/{rev_id}/like - ✓
+POST /location/{location_id}/review - ✓<br />
+PATCH /location/{location_id}/review/{rev_id} - ✓<br />
+DELETE /location/{location_id}/review/{rev_id} - ✓<br />
+GET /location/{loc_id}/review/{rev_id}/photo - ~ <br />
+POST /location/{location_id}/review/{rev_id}/photo - ~<br />
+DELETE /location/{loc_id}/review/{rev_id}/photo - ✓<br />
+POST /location/{loc_id}/review/{rev_id}/like - ✓<br />
+DELETE /location/{loc_id}/review/{rev_id}/like - ✓<br />
 
-GET /location/{loc_id} - ✓
-POST /location/{loc_id}/favourite - ✓
-DELETE /location/{loc_id}/favourite - ✓
-GET /find - ✓
+GET /location/{loc_id} - ✓<br />
+POST /location/{loc_id}/favourite - ✓<br />
+DELETE /location/{loc_id}/favourite - ✓<br />
+GET /find - ✓<br />
 
-Extension 1 - ✓
-Extension 2 - ✓
+Extension 1 - ✓<br />
+Extension 2 - ✓<br />
